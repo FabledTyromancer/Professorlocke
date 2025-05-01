@@ -20,7 +20,7 @@ class ProfessorLocke:
     def __init__(self, root):
         self.root = root
         self.root.title("ProfessorLocke")
-        self.root.geometry("600x550") # window size
+        self.root.geometry("600x550") # window size, do what you want
 
         # Set font
         self.root.option_add('*Font', DEFAULT_FONT) 
@@ -35,10 +35,10 @@ class ProfessorLocke:
         self.load_egg_group_cache()
         
         # Sound effects
-        self.correct_sound = {filepath}  # correct answer sound
-        self.incorrect_sound = {filepath}  # incorrect answer sound
-        self.victory_theme = {filepath}  # Victory theme
-        self.failure_theme = {filepath}  # Failure theme
+        self.correct_sound = {filepath}  # correct answer sound, add your own path
+        self.incorrect_sound = {filepath}  # incorrect answer sound, add your own path
+        self.victory_theme = {filepath}  # Victory theme, add your own path
+        self.failure_theme = {filepath}  # Failure theme, add your own path
 
         # Initialize variables
         self.current_pokemon: Optional[Dict] = None
