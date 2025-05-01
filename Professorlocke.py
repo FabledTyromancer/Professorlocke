@@ -48,8 +48,8 @@ class ProfessorLocke:
         self.answers: Dict[str, str] = {}
         self.score: int = 0
         self.total_questions: int = 0
-        self.answered_questions: set = set()  # Track which questions have been answered
-        self.sprite_label: Optional[ttk.Label] = None  # For displaying sprite
+        self.answered_questions: set = set() 
+        self.sprite_label: Optional[ttk.Label] = None 
         
         self.setup_ui()
         
