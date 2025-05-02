@@ -34,7 +34,7 @@ class ProfessorLocke:
         self.egg_group_cache = {}
         self.load_egg_group_cache()
         
-        # Sound effects
+        # Sound effects, make active with your own file paths, code will still run if they aren't mapped correctly
 #        self.correct_sound = {filepath}  # correct answer sound
 #        self.incorrect_sound = {filepath}  # incorrect answer sound
 #        self.victory_theme = {filepath}  # Victory theme
