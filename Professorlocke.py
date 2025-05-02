@@ -20,7 +20,7 @@ class ProfessorLocke:
     def __init__(self, root):
         self.root = root
         self.root.title("ProfessorLocke")
-        self.root.geometry("600x550") # window size, do what you want
+        self.root.geometry("600x550") # window size
 
         # Set font
         self.root.option_add('*Font', DEFAULT_FONT) 
@@ -35,10 +35,10 @@ class ProfessorLocke:
         self.load_egg_group_cache()
         
         # Sound effects
-        self.correct_sound = {filepath}  # correct answer sound, add your own path
-        self.incorrect_sound = {filepath}  # incorrect answer sound, add your own path
-        self.victory_theme = {filepath}  # Victory theme, add your own path
-        self.failure_theme = {filepath}  # Failure theme, add your own path
+#        self.correct_sound = {filepath}  # correct answer sound
+#        self.incorrect_sound = {filepath}  # incorrect answer sound
+#        self.victory_theme = {filepath}  # Victory theme
+#        self.failure_theme = {filepath}  # Failure theme
 
         # Initialize variables
         self.current_pokemon: Optional[Dict] = None
@@ -48,8 +48,8 @@ class ProfessorLocke:
         self.answers: Dict[str, str] = {}
         self.score: int = 0
         self.total_questions: int = 0
-        self.answered_questions: set = set() 
-        self.sprite_label: Optional[ttk.Label] = None 
+        self.answered_questions: set = set()  # Track which questions have been answered
+        self.sprite_label: Optional[ttk.Label] = None  # For displaying sprite
         
         self.setup_ui()
         
@@ -197,9 +197,11 @@ class ProfessorLocke:
 
         # Play victory or failure theme based on score
         if percentage >= 75:
-            winsound.PlaySound(self.victory_theme, winsound.SND_ALIAS | winsound.SND_ASYNC)
+            try: winsound.PlaySound(self.victory_theme, winsound.SND_ALIAS | winsound.SND_ASYNC)
+            except: pass
         else:
-            winsound.PlaySound(self.failure_theme, winsound.SND_ALIAS | winsound.SND_ASYNC)
+            try: winsound.PlaySound(self.failure_theme, winsound.SND_ALIAS | winsound.SND_ASYNC)
+            except: pass
         
         # Fetch and display sprite
         try:
@@ -497,14 +499,16 @@ class ProfessorLocke:
             if correct:
                 result_label.config(text="Correct!", foreground="green")
                 self.score += 1
-                winsound.PlaySound(self.correct_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
+                try: winsound.PlaySound(self.correct_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
+                except: pass
             else:
                 if question["field"] == "evolution" and isinstance(question["answer"], list):
                     answer_text = "Possible answers:\n" + "\n".join(f"- {ans}" for ans in question["answer"])
                 else:
                     answer_text = f"Incorrect. The correct answer is: {question['answer']}"
                 result_label.config(text=answer_text, foreground="red")
-                winsound.PlaySound(self.incorrect_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
+                try: winsound.PlaySound(self.incorrect_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
+                except: pass
             #score
             self.total_questions += 1
             self.score_label.config(text=f"Score: {self.score}/{self.total_questions}")
