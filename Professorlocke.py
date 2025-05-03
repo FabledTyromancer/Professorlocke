@@ -24,6 +24,7 @@ class ProfessorLocke:
         # String similarity threshold in percentage
         self.string_similarity_threshold = 0.7
         self.ui.update_score(self.score, self.total_questions)
+        
 
     def start_quiz(self, pokemon_name: str):
         # Fetch Pokémon data
@@ -40,6 +41,8 @@ class ProfessorLocke:
         self.total_questions = 0
         self.current_question_index = 0
         self.answered_questions.clear()
+        self.ui.sprite_label.config(image='')  # Clear sprite
+        
 
         # Show the first question
         self.show_current_question()
