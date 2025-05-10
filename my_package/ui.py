@@ -5,12 +5,8 @@ from PIL import Image, ImageTk, ImageOps
 import requests
 import io
 import winsound
-import os
 
 DEFAULT_FONT = ('Arial', 16)
-
-cache_dir = "professor_cache"
-  
 
 
 class QuizUI:
@@ -29,18 +25,13 @@ class QuizUI:
         self.score_label = None
         self.sprite_label = None
         self.question_frame = None
-        self.feedback_frame = None
         self.prev_button = None
         self.next_button = None
         self.pokemon_entry = None
 
-        # Themes for answers
-        self.correct_sound = os.path.join(cache_dir, "correct.wav")
-        self.incorrect_sound = os.path.join(cache_dir,"incorrect.wav")
-        self.partial_correct_sound = os.path.join(cache_dir, "partial_correct.wav")
         # Themes for final grade
-        self.victory_theme = os.path.join(cache_dir,"victory.wav")
-        self.failure_theme = os.path.join(cache_dir,"failure.wav")
+        self.victory_theme = "victory.wav"
+        self.failure_theme = "failure.wav"
 
         self.setup_ui()
 
@@ -63,11 +54,6 @@ class QuizUI:
         # Question frame
         self.question_frame = ttk.Frame(self.root)
         self.question_frame.pack(pady=5, padx=10, fill="both", expand=True)
-
-        # Feedback frame
-        self.feedback_frame = ttk.Frame(self.root)
-        self.feedback_frame.pack(pady=5, padx=10, fill="x")
-
 
         # Navigation frame
         nav_frame = ttk.Frame(self.root)
@@ -131,15 +117,11 @@ class QuizUI:
                             style='Large.TRadiobutton').pack(side="left", padx=5)
             ttk.Radiobutton(radio_frame, text="False", variable=var, value=False,
                             style='Large.TRadiobutton').pack(side="left", padx=5)
-            radio_frame.winfo_children()[0].focus_set()
         else:
             var = tk.StringVar()
             entry = ttk.Entry(input_frame, textvariable=var,
                               width=25, font=DEFAULT_FONT)
             entry.grid(row=0, column=0, sticky="w", padx=(0, 5))
-            entry.focus_set()
-        
-
 
             # Pre-fill the user's previous answer if it exists
             if "user_answer" in question:
@@ -166,21 +148,19 @@ class QuizUI:
                     radio.config(state="disabled")
             else:
                 entry.config(state="disabled")
-        if not answered and question["type"] != "boolean":
-            entry.bind('<Return>', lambda e: submit_answer())
-    def show_sprite(self, sprite_path: str, grayscale: bool = False):
+
+    def show_sprite(self, sprite_url: str, grayscale: bool = False):
         """Fetch and display the Pokémon sprite."""
         try:
-            if os.path.isfile(sprite_path):
-                image = Image.open(sprite_path)
+            response = requests.get(sprite_url)
+            if response.status_code == 200:
+                image = Image.open(io.BytesIO(response.content))
                 if grayscale:
                     image = ImageOps.grayscale(image)
                 image = image.resize((200, 200), Image.Resampling.LANCZOS)
                 photo = ImageTk.PhotoImage(image)
                 self.sprite_label.config(image=photo)
                 self.sprite_label.image = photo  # Keep a reference
-            else:
-                print(f"Sprite not found: {sprite_path}")
         except Exception as e:
             print(f"Error loading sprite: {e}")
 
@@ -208,12 +188,8 @@ class QuizUI:
 
     def show_feedback(self, message: str, color: str):
         """Display feedback for the user's answer."""
-
-        for widget in self.feedback_frame.winfo_children():
-            widget.destroy()
-
         feedback_label = ttk.Label(
-            self.feedback_frame, text=message, font=DEFAULT_FONT, foreground=color)
+            self.root, text=message, font=DEFAULT_FONT, foreground=color)
         feedback_label.pack(pady=5)
 
         # Automatically remove feedback after x seconds(In milliseconds)
