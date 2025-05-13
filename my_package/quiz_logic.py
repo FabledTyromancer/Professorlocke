@@ -1,10 +1,9 @@
 import requests
 import random
 from typing import Dict, List, Union, Tuple
-from my_package.utils import meters_to_feet_inches, kg_to_lbs
+from my_package.utils import meters_to_feet_inches, kg_to_lbs, censor_pokemon_names
 from difflib import SequenceMatcher
 import unicodedata
-
 
 def normalize_string(input_string: str) -> str:
     """Normalize a string by converting to lowercase and removing accents."""
@@ -12,61 +11,100 @@ def normalize_string(input_string: str) -> str:
     return ''.join(c for c in normalized if unicodedata.category(c) != 'Mn').lower().strip()
 
 
-def generate_questions(current_pokemon: Dict, species_data: Dict, egg_group_cache: Dict) -> List[Dict]:
+
+def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[Dict]) -> List[Dict]:
     """Generate quiz questions based on Pokémon data."""
     questions = [
         {
             "type": "text",
-            "question": f"What is {current_pokemon['name'].title()}'s genus?",
-            "answer": next((g['genus'] for g in species_data['genera'] if g['language']['name'] == 'en'), ''),
+            "question": f"What is {pokemon.get('name').title()}'s genus?",
+            "answer": pokemon['genus'][0] if pokemon['genus'] else "unknown",
             "field": "genus"
         },
         {
             "type": "text",
-            "question": f"What type(s) is {current_pokemon['name'].title()}?",
-            "answer": [t['type']['name'] for t in current_pokemon['types']],
+            "question": f"What type(s) is {pokemon.get('name').title()}?",
+            "answer": pokemon.get('types', []),
             "field": "type"
         },
         {
             "type": "text",
-            "question": f"What is {current_pokemon['name'].title()}'s height in feet and inches? (e.g., 5'11\")",
-            "answer": meters_to_feet_inches(current_pokemon['height'] / 10),
+            "question": f"What is {pokemon.get('name').title()}'s height in feet and inches? (e.g., 5'11\")",
+            "answer": meters_to_feet_inches(pokemon.get('height') / 10),
             "field": "height"
         },
         {
             "type": "text",
-            "question": f"What is {current_pokemon['name'].title()}'s weight in pounds?",
-            "answer": round(kg_to_lbs(current_pokemon['weight'] / 10), 1),
+            "question": f"What is {pokemon.get('name').title()}'s weight in pounds?",
+            "answer": round(kg_to_lbs(pokemon.get('weight') / 10), 1),
             "field": "weight"
         },
         {
             "type": "text",
-            "question": f"What egg group(s) does {current_pokemon['name'].title()} belong to?",
-            "answer": [egg_group_cache.get(eg['name'], eg['name']) for eg in species_data['egg_groups']],
+            "question": f"What egg group(s) does {pokemon.get('name').title()} belong to?",
+            "answer": [egg_group_cache.get(eg, eg) for eg in pokemon['egg_groups']],
             "field": "egg_group"
         },
         {
             "type": "text",
-            "question": f"What ability/abilities does {current_pokemon['name'].title()} have?",
-            "answer": [a['ability']['name'] for a in current_pokemon['abilities']],
+            "question": f"What ability/abilities does {pokemon['name'].title()} have?",
+            "answer": [a['name'] for a in pokemon['abilities']],
             "field": "ability"
         }
+
     ]
 
     # Add evolution chain question if available
-    if species_data.get('evolution_chain'):
-        try:
-            evolution_response = requests.get(
-                species_data['evolution_chain']['url'])
-            evolution_response.raise_for_status()
-            evolution_data = evolution_response.json()
+    evo_details = pokemon.get('evolution_chain_details', [])
+    if evo_details:
+        methods = []
+        # Only include evolutions where the 'from' is the current Pokémon
+        for evo in evo_details:
+            if evo.lower().startswith(pokemon['name'].lower() + " to "):
+            # The answer is the part after the colon and space
+                parts = evo.split(": ", 1)
+                if len(parts) > 1:
+                    methods.append(parts[1])
+        if methods:
+                questions.append(
+                {
+                "type": "text",
+                "question": f"How does {pokemon['name'].title()} evolve (any method)?",
+                "answer": methods,
+                "field": "evolution"
+                })
 
-            # Process evolution chain logic here (if needed)
-            # Add evolution-related questions to the `questions` list
-        except requests.RequestException:
-            pass
+    flavor_texts = pokemon.get('flavor_text', [])
+    if flavor_texts:
+        use_current = random.random() < .65
+        if use_current:
+            chosen_text = random.choice(flavor_texts)
+            censored_entry = censor_pokemon_names(chosen_text)
+            correct_answer = True
+        
+        else:
+            other_pokemon = random.choice([p for p in all_pokemon if p['name'] != pokemon['name']])
+            other_flavor_texts = other_pokemon.get('flavor_text', [])
+            if other_flavor_texts:
+                chosen_text = random.choice(other_flavor_texts)
+                censored_entry = censor_pokemon_names(chosen_text)
+                correct_answer = False
+            else:
+                chosen_text = random.choice(flavor_texts)
+                correct_answer = True
+        questions.append(
+            {
+                "type": "boolean",
+                "question": f"Is this a Pokédex entry for {pokemon['name'].title()}? {censored_entry}",
+                "answer": correct_answer,
+                "field": "flavor_text"
+            }
+        )
 
     return questions
+
+
+
 
 
 def check_boolean_answer(user_answer: bool, correct_answer: bool) -> bool:
