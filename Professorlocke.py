@@ -41,7 +41,9 @@ class ProfessorLocke:
             self.loading_label.destroy()  # Remove loading label
             
 
-         
+            self.data = fetch_pokemon_data()
+            self.sprite_check = cache_sprites()
+            self.egg_group_cache = load_egg_group_cache()
             self.all_pokemon = self.data
             self.current_pokemon = None
             self.questions = []
