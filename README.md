@@ -13,7 +13,7 @@ It's a bit of a quirky thing, mainly parsing jsons and wrapping it up pretty for
 
 # How to Use:
 
-For the initial install, again, make sure you have the dependencies above, and take the cache and stick it where your os.path goes. On Windows, you're probably looking at C:\Users\[your user here]. Unzip the sprites. If you DON'T do this, you're going to have a LENGTHY download while it pulls from the API for the first initialization, around 20 minutes. Oh, and you won't have any sounds.
+For the initial install, again, make sure you have the dependencies above. On Windows, you're probably looking at C:\Users\[your user here]. There will be a lengthy download when you launch it for the first time, with an initialization displayed in the GUI and some text printed in the terminal, but there are areas where you can activate/reactivate debug lines if you have problems. If you want to add sounds, be sure you put them in the cache file (professor_cache) created on the os.path. I have added a full zipped version of the cache that you can download and unzip in the right spot, to not pull from the API, but I anticipate it will get out of date fast.
 
 It's also not the nicest on the API to do that much pulling, so please be mindful! But if you want to add more parameters to pull from the species or pokemon files, you can do so in the jsongenerator package, if you want to add more questions, do so in the quiz_logic package, just make sure you're consistent. The UI and Professorlocke shouldn't care one way or the other.
 
@@ -28,3 +28,4 @@ You are free to modify this code, fork it, etc, just provide some credit to me f
 # Thanks
 
 My eternal thanks to the wonderful Chlotendo for her help and patience!
+Also, y'know, the people who run a free API of Pokémon data. PokeAPI folks, thank you for this incredible resource!
