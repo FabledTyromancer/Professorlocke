@@ -79,15 +79,18 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
         use_current = random.random() < .65 # weight to decide current pokemon or a random one
         if use_current:
             chosen_text = random.choice(flavor_texts) #picks a random entry
-            censored_entry = censor_pokemon_names(chosen_text)
+            names_to_censor = [pokemon['name']]
+            censored_entry = censor_pokemon_names(chosen_text, names_to_censor)
             correct_answer = True
         
         else:
             other_pokemon = random.choice([p for p in all_pokemon if p['name'] != pokemon['name']])
+            flavor_pokemon_name = other_pokemon['name']
             other_flavor_texts = other_pokemon.get('flavor_text', [])
             if other_flavor_texts:
                 chosen_text = random.choice(other_flavor_texts)
-                censored_entry = censor_pokemon_names(chosen_text)
+                names_to_censor = [pokemon['name'], flavor_pokemon_name]
+                censored_entry = censor_pokemon_names(chosen_text, names_to_censor)
                 correct_answer = False
             else:
                 chosen_text = random.choice(flavor_texts)
