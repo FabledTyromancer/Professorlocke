@@ -29,7 +29,7 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
         },
         {
             "type": "text",
-            "question": f"What is {pokemon.get('name').title()}'s height in feet and inches? (e.g., 5'11\")",
+            "question": f"What is {pokemon.get('name').title()}'s height? (e.g., 5'11\")",
             "answer": meters_to_feet_inches(pokemon.get('height') / 10),
             "field": "height"
         },
@@ -65,7 +65,7 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
                 parts = evo.split(": ", 1)
                 if len(parts) > 1:
                     methods.append(parts[1])
-        if methods:
+        if methods: #only add if it evolves
                 questions.append(
                 {
                 "type": "text",
@@ -73,12 +73,12 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
                 "answer": methods,
                 "field": "evolution"
                 })
-
+    # get a random flavor text from our pokemon or from all_pokemon, then censor pokemon names.
     flavor_texts = pokemon.get('flavor_text', [])
     if flavor_texts:
-        use_current = random.random() < .65
+        use_current = random.random() < .65 # weight to decide current pokemon or a random one
         if use_current:
-            chosen_text = random.choice(flavor_texts)
+            chosen_text = random.choice(flavor_texts) #picks a random entry
             censored_entry = censor_pokemon_names(chosen_text)
             correct_answer = True
         
@@ -92,6 +92,7 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
             else:
                 chosen_text = random.choice(flavor_texts)
                 correct_answer = True
+        #adds this question to the list with the information above.
         questions.append(
             {
                 "type": "boolean",
@@ -101,17 +102,18 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
             }
         )
 
-    return questions
+    return questions    #completes questions as a list; if adding more questions, they need to go above here.
+                        #if they need logic, have them do the logic then append, simple questions can go in the upper portion
 
 
 
 
-
+# for boolean questions
 def check_boolean_answer(user_answer: bool, correct_answer: bool) -> bool:
     """Check if the boolean answer is correct."""
     return user_answer == correct_answer
 
-
+# for multiple correct answers, one
 def check_list_answer(user_answer: str, correct_answers: List[str], normalize_hyphens: bool = False) -> bool:
     """Check if the user's answer matches a list of correct answers."""
     user_answers = [a.strip().lower() for a in user_answer.split(',')]
@@ -123,7 +125,7 @@ def check_list_answer(user_answer: str, correct_answers: List[str], normalize_hy
 
     return any(user_answer in correct_answers for user_answer in user_answers)
 
-
+# for order independent answering (a + b or b + a, but both needed)
 def check_set_answer(user_answer: str, correct_answers: List[str]) -> bool:
     """Check if the user's answers match the correct answers as a set (order-independent)."""
     user_answers = set(a.strip().lower() for a in user_answer.split(','))
@@ -154,7 +156,7 @@ def check_weight_answer(user_answer: str, correct_weight_kg: float, margin: floa
     except ValueError:
         return False
 
-
+# ignore "pokemon" at the end of the genus
 def check_genus_answer(user_answer: str, correct_genus: str) -> bool:
     """Check if the user's genus answer matches the correct genus."""
     normalized_user_genus = normalize_string(user_answer)
@@ -162,7 +164,7 @@ def check_genus_answer(user_answer: str, correct_genus: str) -> bool:
         correct_genus).replace(" pokemon", "").replace(" pokémon", "")
     return normalized_user_genus == normalized_correct_genus
 
-
+# spelling/error tolerance
 def is_similar_string(user_answer: str, correct_answer: str, threshold: float = 0.8) -> bool:
     """Check if two strings are similar based on a similarity threshold."""
     similarity = SequenceMatcher(None, user_answer.strip(

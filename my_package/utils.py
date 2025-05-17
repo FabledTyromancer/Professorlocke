@@ -10,7 +10,7 @@ def kg_to_lbs(kg: float) -> float:
     """Convert kilograms to pounds."""
     return kg * 2.20462
 
-
+#censor function
 def censor_pokemon_names(text: str) -> str:
     """Replace Pokémon names with '***' in text."""
     words = text.split()

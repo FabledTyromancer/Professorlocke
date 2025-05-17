@@ -11,18 +11,21 @@ POKEMON_COUNT = 1025 # Current mon number, adjust if there's more in the future 
 API_BASE = "https://pokeapi.co/api/v2/"
 
 
-def get_pokemon_entry(id):  # Go catch them mons, fetch them all (data that is)
+def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch them all (data that is)
     try:  # I love error handling
-        pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json()
-        species_resp = requests.get(API_BASE + f"pokemon-species/{id}").json()
+        pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json() #pokemon file
+        species_resp = requests.get(API_BASE + f"pokemon-species/{id}").json() #pokemon species file
 
+        #fetch namme
         name = pokemon_resp["name"]
+        #fetch genus
         genus = []
         for gen in species_resp["genera"]:
             if gen.get("language", {}).get("name") == "en":  # Ensure it's in English
                 genus.append(gen["genus"])
-
+        #fetch types
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
+        #fetch all abilities
         abilities = []
         for a in pokemon_resp["abilities"]:
             ability_name = a["ability"]["name"]
@@ -31,14 +34,19 @@ def get_pokemon_entry(id):  # Go catch them mons, fetch them all (data that is)
                 "name": ability_name,
                 "short_effect": ability_effect
             })
+        #fetch height & weight
         height = pokemon_resp["height"]
         weight = pokemon_resp["weight"]
+        #fetch held item if it can have one 
         held_items = [item["item"]["name"]
                       for item in pokemon_resp["held_items"]]
+        #fetch front_default sprite url, for sprite caching later
         sprite = pokemon_resp["sprites"]["front_default"]
 
+        #fetch groups
         egg_groups = [e["name"] for e in species_resp["egg_groups"]]
 
+        #fetch dex entries
         flavor_texts = []  # Create a list to store all English flavor texts
         flavor_text_entries = species_resp.get("flavor_text_entries", [])
         for f in flavor_text_entries:
@@ -46,7 +54,7 @@ def get_pokemon_entry(id):  # Go catch them mons, fetch them all (data that is)
                     flavor_texts.append(f.get("flavor_text", ""))  # Append to the list
                     flavor_texts = list(set(flavor_texts))  # Remove duplicates
 
-
+        #fetch evolution chain (all entries) and details
         evolution_chain = []
         if "evolution_chain" in species_resp and species_resp["evolution_chain"]["url"]:
             evo_chain_url = species_resp["evolution_chain"]["url"]
@@ -55,7 +63,7 @@ def get_pokemon_entry(id):  # Go catch them mons, fetch them all (data that is)
             triggers = extract_evolution_chain_details(evo_chain_data["chain"])
 
 
-
+        #if you pull more data from a pokemon, you'll have to add it here, as this is the json build
         return {
             "id": id,  # Add the Pokémon ID here
             "name": name,
@@ -74,6 +82,8 @@ def get_pokemon_entry(id):  # Go catch them mons, fetch them all (data that is)
         }
     except Exception as e:
         print(f"Error fetching Pokémon ID {id}: {e}")
+        if status_callback:
+            status_callback(f"Error fetching Pokémon ID {id}: {e}")
         return None
 
 def get_ability_effect(ability_name):
@@ -108,9 +118,9 @@ def extract_evolution_chain_details(chain):
     def find_next_evolution(evolution_details):
         if not evolution_details:
             return
-                
+        #ensures we're pulling for our pokemon in question         
         current_species = evolution_details.get("species", {}).get("name", "unknown")
-        
+        #separates evolution for current pokemon and evolution target, then proceeds through sorting that information for text entries
         for evo in evolution_details.get("evolves_to", []):
             evolution_data = evo.get("evolution_details", [])
             evolves_to = evo.get("species", {}).get("name", "unknown")
@@ -210,11 +220,14 @@ def clean_evolution_detail(detail):
     return detail
 
 
-def main():
+def main(status_callback=None):
     all_pokemon = []
     for i in range(1, POKEMON_COUNT + 1):
-        print(f"Fetching Pokémon ID {i}...")
-        entry = get_pokemon_entry(i)
+        msg = f"Fetching Pokémon ID {i}/{POKEMON_COUNT}..."
+        print(msg)
+        if status_callback:
+            status_callback(msg)
+        entry = get_pokemon_entry(i, status_callback)
         if entry:
             all_pokemon.append(entry)
         time.sleep(0.5)  # Respect API limits (critical)
@@ -226,6 +239,8 @@ def main():
         json.dump(all_pokemon, c, indent=2)
 
     print("Saved professordata.json successfully!")
+    if status_callback:
+        status_callback("Saved professordata.json successfully!")
 
 if __name__ == "__main__":
     main()
