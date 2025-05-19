@@ -1,0 +1,584 @@
+[
+  {
+    "id": 1,
+    "name": "bulbasaur",
+    "genus": [
+      "Seed Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "There is a plant seed on its back right\nfrom the day this POK\u00e9MON is born.\nThe seed slowly grows larger.",
+      "A strange seed was planted on its back at birth.\nThe plant sprouts and grows with this Pok\u00e9mon.",
+      "The seed on its back is filled\nwith nutrients. The seed grows\nsteadily larger as its body grows.",
+      "Bulbasaur can be seen napping in bright sunlight.\nThere is a seed on its back. By soaking up the sun\u2019s rays,\nthe seed grows progressively larger.",
+      "While it is young,\nit uses the\nnutrients that are\fstored in the\nseeds on its back\nin order to grow.",
+      "For some time after its birth, it grows by gaining\nnourishment from the seed on its back.",
+      "It can go for days without eating a single morsel.\nIn the bulb on its back, it stores energy.",
+      "There is a plant seed on its back right from the\nday this Pok\u00e9mon is born. The seed slowly\ngrows larger.",
+      "While it is young, it uses the nutrients that are\nstored in the seed on its back in order to grow.",
+      "It carries a seed on its back right\nfrom birth. As it grows older, the\nseed also grows larger.",
+      "It can go for days\nwithout eating a\nsingle morsel.\fIn the bulb on\nits back, it\nstores energy.",
+      "A strange seed was planted on its back at\nbirth. The plant sprouts and grows with\nthis POK\u00e9MON.",
+      "BULBASAUR can be seen napping in\nbright sunlight.\nThere is a seed on its back.\fBy soaking up the sun\u2019s rays, the seed\ngrows progressively larger.",
+      "For some time after its birth, it\ngrows by gaining nourishment from\nthe seed on its back.",
+      "BULBASAUR can be seen napping in bright\nsunlight. There is a seed on its back.\nBy soaking up the sun\u2019s rays, the seed\ngrows progressively larger.",
+      "A strange seed was\nplanted on its\nback at birth.\fThe plant sprouts\nand grows with\nthis POK\u00e9MON.",
+      "It carries a seed\non its back right\nfrom birth. As it\fgrows older, the\nseed also grows\nlarger.",
+      "The seed on its\nback is filled\nwith nutrients.\fThe seed grows\nsteadily larger as\nits body grows."
+    ],
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "abilities": [
+      {
+        "name": "overgrow",
+        "short_effect": "Strengthens grass moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "chlorophyll",
+        "short_effect": "Doubles Speed during strong sunlight."
+      }
+    ],
+    "height": 7,
+    "weight": 69,
+    "egg_groups": [
+      "monster",
+      "plant"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "bulbasaur",
+      "ivysaur",
+      "venusaur"
+    ],
+    "evolution_chain_details": [
+      "bulbasaur to ivysaur: level-up at level 16",
+      "ivysaur to venusaur: level-up at level 32"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+  },
+  {
+    "id": 2,
+    "name": "ivysaur",
+    "genus": [
+      "Seed Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "The bulb on its\nback grows as it\nabsorbs nutrients.\fThe bulb gives off\na pleasant aroma\nwhen it blooms.",
+      "Exposure to sun\u00ad\nlight adds to its\nstrength. Sunlight\falso makes the bud\non its back grow\nlarger.",
+      "When the bulb on its back grows large, it\nappears to lose the ability to stand on\nits hind legs.",
+      "Exposure to sunlight adds to its strength.\nSunlight also makes the bud on its back\ngrow larger.",
+      "Exposure to sunlight adds to its\nstrength. Sunlight also makes the\nbud on its back grow larger.",
+      "There is a bud on this POK\u00e9MON\u2019s back.\nTo support its weight, IVYSAUR\u2019s legs\nand trunk grow thick and strong.\fIf it starts spending more time lying\nin the sunlight, it\u2019s a sign that the\nbud will bloom into a large flower soon.",
+      "There is a plant bulb on its back.\nWhen it absorbs nutrients, the bulb is said to\nblossom into a large flower.",
+      "When the bulb on\nits back grows\nlarge, it appears\fto lose the\nability to stand\non its hind legs.",
+      "There is a plant bulb on its back.\nWhen it absorbs nutrients, the bulb is said\nto blossom into a large flower.",
+      "When the bud on its back starts swelling, a sweet\naroma wafts to indicate the flower\u2019s coming bloom.",
+      "To support its bulb, IVYSAUR\u2019s legs\ngrow sturdy. If it spends more time lying in\nthe sunlight, the bud will soon bloom into\na large flower.",
+      "There is a bud on this Pok\u00e9mon\u2019s back. To support its weight,\nIvysaur\u2019s legs and trunk grow thick and strong.\nIf it starts spending more time lying in the sunlight,\nit\u2019s a sign that the bud will bloom into a large flower soon.",
+      "When the bulb on its back grows large, it\nappears to lose the ability to stand on its\nhind legs.",
+      "If the bud on its\nback starts to\nsmell sweet, it\fis evidence that\nthe large flower\nwill soon bloom.",
+      "When the bud on its back starts\nswelling, a sweet aroma wafts to\nindicate the flower\u2019s coming bloom.",
+      "If the bud on its back starts to\nsmell sweet, it is evidence that\nthe large flower will soon bloom.",
+      "The bulb on its\nback grows by\ndrawing energy.\fIt gives off an\naroma when it is\nready to bloom.",
+      "The bud on its back grows by drawing energy. It\ngives off an aroma when it is ready to bloom."
+    ],
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "abilities": [
+      {
+        "name": "overgrow",
+        "short_effect": "Strengthens grass moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "chlorophyll",
+        "short_effect": "Doubles Speed during strong sunlight."
+      }
+    ],
+    "height": 10,
+    "weight": 130,
+    "egg_groups": [
+      "monster",
+      "plant"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "bulbasaur",
+      "ivysaur",
+      "venusaur"
+    ],
+    "evolution_chain_details": [
+      "bulbasaur to ivysaur: level-up at level 16",
+      "ivysaur to venusaur: level-up at level 32"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png"
+  },
+  {
+    "id": 3,
+    "name": "venusaur",
+    "genus": [
+      "Seed Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "Its plant blooms when it is absorbing solar\nenergy. It stays on the move to seek sunlight.",
+      "A bewitching aroma wafts from its flower.\nThe fragrance becalms those engaged\nin a battle.",
+      "By spreading the broad petals of its flower\nand catching the sun\u2019s rays, it fills its body\nwith power.",
+      "By spreading the broad petals of\nits flower and catching the sun\u2019s\nrays, it fills its body with power.",
+      "A bewitching aroma wafts from its flower.\nThe fragrance becalms those engaged in\na battle.",
+      "It is able to convert sunlight into\nenergy. As a result, it is more\npowerful in the summertime.",
+      "After a rainy day, the flower on\nits back smells stronger. The\nscent attracts other Pok\u00e9mon.",
+      "It is able to con\u00ad\nvert sunlight into\nenergy. As a\fresult, it is more\npowerful in the\nsummertime.",
+      "There is a large flower on Venusaur\u2019s back. The flower is said\nto take on vivid colors if it gets plenty of nutrition and sunlight.\nThe flower\u2019s aroma soothes the emotions of people.",
+      "There is a large flower on VENUSAUR\u2019s\nback. The flower is said to take on vivid\ncolors if it gets plenty of nutrition\fand sunlight. The flower\u2019s aroma\nsoothes the emotions of people.",
+      "VENUSAUR\u2019s flower is said to take on vivid\ncolors if it gets plenty of nutrition and\nsunlight. The flower\u2019s aroma soothes the\nemotions of people.",
+      "After a rainy day, the flower on its back smells\nstronger. The scent attracts other Pok\u00e9mon.",
+      "By spreading the\nbroad petals of\nits flower and\fcatching the sun's\nrays, it fills its\nbody with power.",
+      "As it warms it\u00ad\nself and absorbs\nthe sunlight, its\fflower petals\nrelease a pleasant\nfragrance.",
+      "The flower on its back catches the sun\u2019s rays.\nThe sunlight is then absorbed and\nused for energy.",
+      "Its plant blooms when it is absorbing\nsolar energy. It stays on the move to\nseek sunlight.",
+      "The flower on its\nback catches the\nsun's rays.\fThe sunlight is\nthen absorbed and\nused for energy.",
+      "The plant blooms\nwhen it is\nabsorbing solar\fenergy. It stays\non the move to\nseek sunlight."
+    ],
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "abilities": [
+      {
+        "name": "overgrow",
+        "short_effect": "Strengthens grass moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "chlorophyll",
+        "short_effect": "Doubles Speed during strong sunlight."
+      }
+    ],
+    "height": 20,
+    "weight": 1000,
+    "egg_groups": [
+      "monster",
+      "plant"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "bulbasaur",
+      "ivysaur",
+      "venusaur"
+    ],
+    "evolution_chain_details": [
+      "bulbasaur to ivysaur: level-up at level 16",
+      "ivysaur to venusaur: level-up at level 32"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png"
+  },
+  {
+    "id": 4,
+    "name": "charmander",
+    "genus": [
+      "Lizard Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "The flame on its tail shows the\nstrength of its life force. If it is weak,\nthe flame also burns weakly.",
+      "It has a preference for hot things. When it rains,\nsteam is said to spout from the tip of its tail.",
+      "The flame on its tail indicates\nCHARMANDER\u2019s life force. If it is\nhealthy, the flame burns brightly.",
+      "It has a preference for hot things.\nWhen it rains, steam is said to spout from\nthe tip of its tail.",
+      "The flame at the tip of its tail makes a sound as\nit burns. You can only hear it in quiet places.",
+      "The flame that burns at the tip of its\ntail is an indication of its emotions.\nThe flame wavers when CHARMANDER is\nhappy, and blazes when it is enraged.",
+      "The flame that burns at the tip of its\ntail is an indication of its emotions.\nThe flame wavers when CHARMANDER is\fenjoying itself. If the POK\u00e9MON becomes\nenraged, the flame burns fiercely.",
+      "From the time it is born, a flame burns at the tip of\nits tail. Its life would end if the flame were to\ngo out.",
+      "From the time it is born, a flame burns at the tip\nof its tail. Its life would end if the flame were to\ngo out.",
+      "The flame on its\ntail indicates\nCHARMANDER's life\fforce. If it is\nhealthy, the flame\nburns brightly.",
+      "The flame on its tail indicates Charmander\u2019s life\nforce. If it is healthy, the flame burns brightly.",
+      "Obviously prefers\nhot places. When\nit rains, steam\fis said to spout\nfrom the tip of\nits tail.",
+      "The flame on its\ntail shows the\nstrength of its\flife force. If it\nis weak, the flame\nalso burns weakly.",
+      "The fire on the tip of its tail is a\nmeasure of its life. If healthy,\nits tail burns intensely.",
+      "If it's healthy,\nthe flame on the\ntip of its tail\fwill burn vigor\u00ad\nously, even if it\ngets a bit wet.",
+      "The flame that burns at the tip of its tail is an indication\nof its emotions. The flame wavers when Charmander\nis enjoying itself. If the Pok\u00e9mon becomes enraged,\nthe flame burns fiercely.",
+      "From the time it is born, a flame burns\nat the tip of its tail. Its life would end\nif the flame were to go out.",
+      "The flame at the\ntip of its tail\nmakes a sound as\fit burns. You can\nonly hear it in\nquiet places."
+    ],
+    "types": [
+      "fire"
+    ],
+    "abilities": [
+      {
+        "name": "blaze",
+        "short_effect": "Strengthens fire moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "solar-power",
+        "short_effect": "Increases Special Attack to 1.5\u00d7 but costs 1/8 max HP after each turn during strong sunlight."
+      }
+    ],
+    "height": 6,
+    "weight": 85,
+    "egg_groups": [
+      "monster",
+      "dragon"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "charmander",
+      "charmeleon",
+      "charizard"
+    ],
+    "evolution_chain_details": [
+      "charmander to charmeleon: level-up at level 16",
+      "charmeleon to charizard: level-up at level 36"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+  },
+  {
+    "id": 5,
+    "name": "charmeleon",
+    "genus": [
+      "Flame Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "Without pity, its sharp claws destroy foes.\nIf it encounters a strong enemy, it\nbecomes agitated, and the flame on its\ntail flares with a bluish white color.",
+      "It lashes about with its tail to knock\ndown its foe. It then tears up the fallen\nopponent with sharp claws.",
+      "In the rocky mountains where\nCharmeleon live, their fiery\ntails shine at night like stars.",
+      "CHARMELEON mercilessly destroys its\nfoes using its sharp claws.\nIf it encounters a strong foe, it turns\faggressive. In this excited state, the\nflame at the tip of its tail flares with a\nbluish white color.",
+      "When it swings its burning tail, it elevates the air\ntemperature to unbearably high levels.",
+      "It lashes about with its tail to knock down its foe.\nIt then tears up the fallen opponent with\nsharp claws.",
+      "When it swings its burning tail, it\nelevates the air temperature to \nunbearably high levels.",
+      "It has a barbaric nature. In battle,\nit whips its fiery tail around\nand slashes away with sharp claws.",
+      "Charmeleon mercilessly destroys its foes using its sharp claws.\nIf it encounters a strong foe, it turns aggressive.\nIn this excited state, the flame at the tip of its tail flares with a\nbluish white color.",
+      "It has a barbaric nature. In battle, it whips its\nfiery tail around and slashes away with sharp claws.",
+      "If it becomes agitated during battle, it spouts\nintense flames, incinerating its surroundings.",
+      "It is very hot\u00ad\nheaded by nature,\nso it constantly\fseeks opponents.\nIt calms down only\nwhen it wins.",
+      "It is very hotheaded by nature,\nso it constantly seeks opponents.\nIt calms down only when it wins.",
+      "It has a barbaric\nnature. In battle,\nit whips its\ffiery tail around\nand slashes away\nwith sharp claws.",
+      "If it becomes\nagitated during\nbattle, it spouts\fintense flames,\nincinerating its\nsurroundings.",
+      "Tough fights could\nexcite this\nPOK\u00e9MON. When\fexcited, it may\nblow out bluish-\nwhite flames.",
+      "In the rocky mountains where\nCHARMELEON live, their fiery\ntails shine at night like stars.",
+      "When it swings\nits burning tail,\nit elevates the\ftemperature to\nunbearably high\nlevels.",
+      "Charmeleon mercilessly destroys its foes using its sharp\nclaws. If it encounters a strong foe, it turns aggressive.\nIn this excited state, the flame at the tip of its tail flares with\na bluish white color.",
+      "Tough fights could excite this Pok\u00e9mon. When\nexcited, it may breathe out bluish-white flames."
+    ],
+    "types": [
+      "fire"
+    ],
+    "abilities": [
+      {
+        "name": "blaze",
+        "short_effect": "Strengthens fire moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "solar-power",
+        "short_effect": "Increases Special Attack to 1.5\u00d7 but costs 1/8 max HP after each turn during strong sunlight."
+      }
+    ],
+    "height": 11,
+    "weight": 190,
+    "egg_groups": [
+      "monster",
+      "dragon"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "charmander",
+      "charmeleon",
+      "charizard"
+    ],
+    "evolution_chain_details": [
+      "charmander to charmeleon: level-up at level 16",
+      "charmeleon to charizard: level-up at level 36"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png"
+  },
+  {
+    "id": 6,
+    "name": "charizard",
+    "genus": [
+      "Flame Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "Breathing intense, hot flames, it can\nmelt almost anything. Its breath\ninflicts terrible pain on enemies.",
+      "It is said that Charizard\u2019s fire\nburns hotter if it has\nexperienced harsh battles.",
+      "Its wings can carry this Pok\u00e9mon close to an\naltitude of 4,600 feet. It blows out fire at very\nhigh temperatures.",
+      "Breathing intense,\nhot flames, it can\nmelt almost any\u00ad\fthing. Its breath\ninflicts terrible\npain on enemies.",
+      "When expelling a\nblast of super\nhot fire, the red\fflame at the tip\nof its tail burns\nmore intensely.",
+      "It is said that CHARIZARD\u2019s fire\nburns hotter if it has\nexperienced harsh battles.",
+      "CHARIZARD flies around the sky in\nsearch of powerful opponents.\nIt breathes fire of such great heat\fthat it melts anything. However, it\nnever turns its fiery breath on any\nopponent weaker than itself.",
+      "If CHARIZARD becomes furious,\nthe flame at the tip of its tail flares\nup in a light blue shade.",
+      "When expelling a blast of superhot fire,\nthe red flame at the tip of its tail burns\nmore intensely.",
+      "Charizard flies around the sky in search of powerful opponents.\nIt breathes fire of such great heat that it melts anything.\nHowever, it never turns its fiery breath on any opponent\nweaker than itself.",
+      "Its wings can carry this POK\u00e9MON close to\nan altitude of 4,600 feet. It blows out\nfire at very high temperatures.",
+      "When this Pok\u00e9mon expels a blast of superhot\nfire, the red flame at the tip of its tail burns\nmore intensely.",
+      "It spits fire that is hot enough to melt boulders.\nIt may cause forest fires by blowing flames.",
+      "It uses its wings\nto fly high. The\ntemperature of its\ffire increases as\nit gains exper\u00ad\nience in battle.",
+      "It spits fire that is hot enough to melt\nboulders. It may cause forest fires by\nblowing flames.",
+      "Spits fire that\nis hot enough to\nmelt boulders.\fKnown to cause\nforest fires\nunintentionally.",
+      "A CHARIZARD flies about in search of\nstrong opponents. It breathes intense\nflames that can melt any material. However,\nit will never torch a weaker foe.",
+      "If CHARIZARD be\u00ad\ncomes furious, the\nflame at the tip\fof its tail flares\nup in a whitish-\nblue color."
+    ],
+    "types": [
+      "fire",
+      "flying"
+    ],
+    "abilities": [
+      {
+        "name": "blaze",
+        "short_effect": "Strengthens fire moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "solar-power",
+        "short_effect": "Increases Special Attack to 1.5\u00d7 but costs 1/8 max HP after each turn during strong sunlight."
+      }
+    ],
+    "height": 17,
+    "weight": 905,
+    "egg_groups": [
+      "monster",
+      "dragon"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "charmander",
+      "charmeleon",
+      "charizard"
+    ],
+    "evolution_chain_details": [
+      "charmander to charmeleon: level-up at level 16",
+      "charmeleon to charizard: level-up at level 36"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png"
+  },
+  {
+    "id": 7,
+    "name": "squirtle",
+    "genus": [
+      "Tiny Turtle Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "It shelters itself in its shell, then strikes back\nwith spouts of water at every opportunity.",
+      "Its shell is not just for protection.\nIts rounded shape and the grooves on its\nsurface minimize resistance in water,\nenabling SQUIRTLE to swim at high speeds.",
+      "SQUIRTLE\u2019s shell is not merely used\nfor protection.\nThe shell\u2019s rounded shape and the\fgrooves on its surface help minimize\nresistance in water, enabling this\nPOK\u00e9MON to swim at high speeds.",
+      "After birth, its\nback swells and\nhardens into a\fshell. Powerfully\nsprays foam from\nits mouth.",
+      "The shell is soft\nwhen it is born.\nIt soon becomes so\fresilient, prod\u00ad\nding fingers will\nbounce off it.",
+      "The shell is soft when it is born.\nIt soon becomes so resilient,\nprodding fingers will bounce off it.",
+      "The shell, which\nhardens soon after\nit is born, is\fresilient. If you\npoke it, it will\nbounce back out.",
+      "Squirtle\u2019s shell is not merely used for protection.\nThe shell\u2019s rounded shape and the grooves on its\nsurface help minimize resistance in water,\nenabling this Pok\u00e9mon to swim at high speeds.",
+      "It shelters itself in its shell,\nthen strikes back with spouts of\nwater at every opportunity.",
+      "Shoots water at prey while in the water. Withdraws\ninto its shell when in danger.",
+      "It shelters itself in its shell\nthen strikes back with spouts of\nwater at every opportunity.",
+      "Squirtle\u2019s shell is not merely used for protection.\nThe shell\u2019s rounded shape and the grooves on its surface\nhelp minimize resistance in water, enabling this Pok\u00e9mon\nto swim at high speeds.",
+      "Shoots water at\nprey while in the\nwater.\fWithdraws into\nits shell when in\ndanger.",
+      "The shell, which hardens soon after\nit is born, is resilient. If you\npoke it, it will bounce back out.",
+      "When it feels threatened, it draws its limbs inside\nits shell and sprays water from its mouth.",
+      "After birth, its back swells and hardens\ninto a shell. It powerfully sprays foam \nfrom its mouth.",
+      "When it feels\nthreatened, it\ndraws its legs\finside its shell\nand sprays water\nfrom its mouth.",
+      "Shoots water at prey while in the water.\nWithdraws into its shell when in danger.",
+      "When it retracts its long neck into its shell, it\nsquirts out water with vigorous force.",
+      "When it retracts its long neck into its\nshell, it squirts out water with vigorous\nforce."
+    ],
+    "types": [
+      "water"
+    ],
+    "abilities": [
+      {
+        "name": "torrent",
+        "short_effect": "Strengthens water moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "rain-dish",
+        "short_effect": "Heals for 1/16 max HP after each turn during rain."
+      }
+    ],
+    "height": 5,
+    "weight": 90,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "squirtle",
+      "wartortle",
+      "blastoise"
+    ],
+    "evolution_chain_details": [
+      "squirtle to wartortle: level-up at level 16",
+      "wartortle to blastoise: level-up at level 36"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png"
+  },
+  {
+    "id": 8,
+    "name": "wartortle",
+    "genus": [
+      "Turtle Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "Often hides in\nwater to stalk\nunwary prey. For\fswimming fast, it\nmoves its ears to\nmaintain balance.",
+      "It cleverly controls its furry\nears and tail to maintain its\nbalance while swimming.",
+      "It is a well-established symbol of\nlongevity. If its shell has algae on it,\nthat WARTORTLE is very old.",
+      "Its tail is large and covered with a rich, thick fur. The tail\nbecomes increasingly deeper in color as Wartortle ages.\nThe scratches on its shell are evidence of this Pok\u00e9mon\u2019s\ntoughness as a battler.",
+      "It is recognized\nas a symbol of\nlongevity. If its\fshell has algae on\nit, that WARTORTLE\nis very old.",
+      "When tapped, this Pok\u00e9mon will pull in its head,\nbut its tail will still stick out a little bit.",
+      "When tapped on its head, this Pok\u00e9mon will pull\nit in, but its tail will still stick out a little bit.",
+      "It cleverly controls its furry ears and tail to\nmaintain its balance while swimming.",
+      "It is said to live 10,000 years.\nIts furry tail is popular as a\nsymbol of longevity.",
+      "It cleverly con\u00ad\ntrols its furry\nears and tail to\fmaintain its\nbalance while\nswimming.",
+      "It often hides in water to stalk unwary\nprey. For fast swimming, it moves its\nears to maintain balance.",
+      "Its large tail is covered with rich, thick\nfur that deepens in color with age.\nThe scratches on its shell are evidence\nof this POK\u00e9MON\u2019s toughness in battle.",
+      "It is said to live 10,000 years. Its furry tail is\npopular as a symbol of longevity.",
+      "This POK\u00e9MON is very popular as a pet.\nIts fur-covered tail is a symbol of its\nlongevity.",
+      "It is recognized as a symbol of longevity. If its\nshell has algae on it, that Wartortle is very old.",
+      "Its tail is large and covered with a rich,\nthick fur. The tail becomes increasingly\ndeeper in color as WARTORTLE ages.\fThe scratches on its shell are evidence\nof this POK\u00e9MON\u2019s toughness as a\nbattler.",
+      "When tapped, this\nPOK\u00e9MON will pull\nin its head, but\fits tail will\nstill stick out a\nlittle bit.",
+      "Its long, furry\ntail is a symbol\nof longevity,\fmaking it quite\npopular among\nolder people."
+    ],
+    "types": [
+      "water"
+    ],
+    "abilities": [
+      {
+        "name": "torrent",
+        "short_effect": "Strengthens water moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "rain-dish",
+        "short_effect": "Heals for 1/16 max HP after each turn during rain."
+      }
+    ],
+    "height": 10,
+    "weight": 225,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "squirtle",
+      "wartortle",
+      "blastoise"
+    ],
+    "evolution_chain_details": [
+      "squirtle to wartortle: level-up at level 16",
+      "wartortle to blastoise: level-up at level 36"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png"
+  },
+  {
+    "id": 9,
+    "name": "blastoise",
+    "genus": [
+      "Shellfish Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "The pressurized water jets on this brutal\nPOK\u00e9MON\u2019s shell are used for high-\nspeed tackles.",
+      "The jets of water it spouts from\nthe rocket cannons on its shell\ncan punch through thick steel.",
+      "It deliberately\nmakes itself heavy\nso it can with\u00ad\fstand the recoil\nof the water jets\nit fires.",
+      "Once it takes aim at its enemy, it blasts out\nwater with even more force than a fire hose.",
+      "The waterspouts that protrude from its\nshell are highly accurate. Their bullets of\nwater can precisely nail tin cans from\na distance of over 160 feet.",
+      "The rocket cannons\non its shell fire\njets of water\fcapable of punch\u00ad\ning holes through\nthick steel.",
+      "Once it takes aim\nat its enemy, it\nblasts out water\fwith even more\nforce than a fire\nhose.",
+      "A brutal POK\u00e9MON\nwith pressurized\nwater jets on its\fshell. They are\nused for high\nspeed tackles.",
+      "The pressurized water jets on this brutal Pok\u00e9mon\u2019s\nshell are used for high-speed tackles.",
+      "Blastoise has water spouts that protrude from its shell.\nThe water spouts are very accurate. They can shoot bullets of\nwater with enough accuracy to strike empty cans from a\ndistance of over 160 feet.",
+      "Blastoise has water spouts that protrude from its shell.\nThe water spouts are very accurate.\nThey can shoot bullets of water with enough accuracy\nto strike empty cans from a distance of over 160 feet.",
+      "It firmly plants\nits feet on the\nground before\fshooting water\nfrom the jets on\nits back.",
+      "It crushes its foe under its heavy body\nto cause fainting. In a pinch, it will\nwithdraw inside its shell.",
+      "The rocket cannons on its shell fire\njets of water capable of punching\nholes through thick steel.",
+      "It crushes its foe under its heavy body to cause\nfainting. In a pinch, it will withdraw inside its shell.",
+      "It deliberately makes itself heavy\nso it can withstand the recoil\nof the water jets it fires.",
+      "BLASTOISE has water spouts that\nprotrude from its shell. The water\nspouts are very accurate.\fThey can shoot bullets of water with\nenough accuracy to strike empty cans\nfrom a distance of over 160 feet.",
+      "The rocket cannons on its shell fire jets of water\ncapable of punching holes through thick steel."
+    ],
+    "types": [
+      "water"
+    ],
+    "abilities": [
+      {
+        "name": "torrent",
+        "short_effect": "Strengthens water moves to inflict 1.5\u00d7 damage at 1/3 max HP or less."
+      },
+      {
+        "name": "rain-dish",
+        "short_effect": "Heals for 1/16 max HP after each turn during rain."
+      }
+    ],
+    "height": 16,
+    "weight": 855,
+    "egg_groups": [
+      "monster",
+      "water1"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "squirtle",
+      "wartortle",
+      "blastoise"
+    ],
+    "evolution_chain_details": [
+      "squirtle to wartortle: level-up at level 16",
+      "wartortle to blastoise: level-up at level 36"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png"
+  },
+  {
+    "id": 10,
+    "name": "caterpie",
+    "genus": [
+      "Worm Pok\u00e9mon"
+    ],
+    "flavor_text": [
+      "Its body is soft and weak. In nature, its\nperpetual fate is to be seen by others as food.",
+      "When attacked by bird Pok\u00e9mon, it resists by\nreleasing a terrifically strong odor from its\nantennae, but it often becomes their prey.",
+      "For protection, it releases a horrible\nstench from the antennae on its\nhead to drive away enemies.",
+      "It releases a stench from its red\nantenna to repel enemies. It\ngrows by molting repeatedly.",
+      "CATERPIE has a voracious appetite.\nIt can devour leaves bigger than its\nbody right before your eyes.\fFrom its antenna, this POK\u00e9MON releases\na terrifically strong odor.",
+      "Its short feet are tipped with suction pads that\nenable it to tirelessly climb slopes and walls.",
+      "For protection, it releases a horrible stench from\nthe antenna on its head to drive away enemies.",
+      "Its short feet are tipped with suction\npads that enable it to tirelessly climb\nslopes and walls.",
+      "Its feet have\nsuction cups\ndesigned to stick\fto any surface. It\ntenaciously climbs\ntrees to forage.",
+      "For protection, it\nreleases a horri\u00ad\nble stench from\fthe antenna on its\nhead to drive away\nenemies.",
+      "Its feet have suction cups designed to stick to any\nsurface. It tenaciously climbs trees to forage.",
+      "It is covered with a green skin. When it\ngrows, it sheds the skin, covers itself\nwith silk, and becomes a cocoon.",
+      "Caterpie has a voracious appetite. It can devour leaves bigger\nthan its body right before your eyes. From its antenna, this\nPok\u00e9mon releases a terrifically strong odor.",
+      "Its feet have suction cups\ndesigned to stick to any surface. It\ntenaciously climbs trees to forage.",
+      "Its voracious appetite compels it to\ndevour leaves bigger than itself without\nhesitation. It releases a terribly strong\nodor from its antennae.",
+      "Its short feet\nare tipped with\nsuction pads that\fenable it to\ntirelessly climb\nslopes and walls.",
+      "If you touch the feeler on top of its head, it will\nrelease a horrible stink to protect itself.",
+      "It\u2019s easy to catch, and it grows quickly, making\nit one of the top recommendations for novice\nPok\u00e9mon Trainers.",
+      "Perhaps because it would like to grow up\nquickly, it has a voracious appetite, eating\na hundred leaves a day.",
+      "It crawls into\nfoliage where it\ncamouflages itself\famong leaves that\nare the same color\nas its body.",
+      "If you touch the\nfeeler on top of\nits head, it will\frelease a horrible\nstink to protect\nitself.",
+      "For protection, it releases a horrible stench from\nthe antennae on its head to drive away enemies.",
+      "Caterpie has a voracious appetite. It can devour leaves\nbigger than its body right before your eyes. From its antenna,\nthis Pok\u00e9mon releases a terrifically strong odor."
+    ],
+    "types": [
+      "bug"
+    ],
+    "abilities": [
+      {
+        "name": "shield-dust",
+        "short_effect": "Protects against incoming moves' extra effects."
+      },
+      {
+        "name": "run-away",
+        "short_effect": "Ensures success fleeing from wild battles."
+      }
+    ],
+    "height": 3,
+    "weight": 29,
+    "egg_groups": [
+      "bug"
+    ],
+    "held_items": [],
+    "evolution_chain": [
+      "caterpie",
+      "metapod",
+      "butterfree"
+    ],
+    "evolution_chain_details": [
+      "caterpie to metapod: level-up at level 7",
+      "metapod to butterfree: level-up at level 10"
+    ],
+    "sprite_url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png"
+  }
+]

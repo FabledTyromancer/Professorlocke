@@ -1,10 +1,9 @@
 import requests
 import random
 from typing import Dict, List, Union, Tuple
-from my_package.utils import meters_to_feet_inches, kg_to_lbs
+from my_package.utils import meters_to_feet_inches, kg_to_lbs, censor_pokemon_names
 from difflib import SequenceMatcher
 import unicodedata
-
 
 def normalize_string(input_string: str) -> str:
     """Normalize a string by converting to lowercase and removing accents."""
@@ -12,68 +11,112 @@ def normalize_string(input_string: str) -> str:
     return ''.join(c for c in normalized if unicodedata.category(c) != 'Mn').lower().strip()
 
 
-def generate_questions(current_pokemon: Dict, species_data: Dict, egg_group_cache: Dict) -> List[Dict]:
+
+def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[Dict]) -> List[Dict]:
     """Generate quiz questions based on Pokémon data."""
     questions = [
         {
             "type": "text",
-            "question": f"What is {current_pokemon['name'].title()}'s genus?",
-            "answer": next((g['genus'] for g in species_data['genera'] if g['language']['name'] == 'en'), ''),
+            "question": f"What is {pokemon.get('name').title()}'s genus?",
+            "answer": pokemon['genus'][0] if pokemon['genus'] else "unknown",
             "field": "genus"
         },
         {
             "type": "text",
-            "question": f"What type(s) is {current_pokemon['name'].title()}?",
-            "answer": [t['type']['name'] for t in current_pokemon['types']],
+            "question": f"What type(s) is {pokemon.get('name').title()}?",
+            "answer": pokemon.get('types', []),
             "field": "type"
         },
         {
             "type": "text",
-            "question": f"What is {current_pokemon['name'].title()}'s height in feet and inches? (e.g., 5'11\")",
-            "answer": meters_to_feet_inches(current_pokemon['height'] / 10),
+            "question": f"What is {pokemon.get('name').title()}'s height? (e.g., 5'11\")",
+            "answer": meters_to_feet_inches(pokemon.get('height') / 10),
             "field": "height"
         },
         {
             "type": "text",
-            "question": f"What is {current_pokemon['name'].title()}'s weight in pounds?",
-            "answer": round(kg_to_lbs(current_pokemon['weight'] / 10), 1),
+            "question": f"What is {pokemon.get('name').title()}'s weight in pounds?",
+            "answer": round(kg_to_lbs(pokemon.get('weight') / 10), 1),
             "field": "weight"
         },
         {
             "type": "text",
-            "question": f"What egg group(s) does {current_pokemon['name'].title()} belong to?",
-            "answer": [egg_group_cache.get(eg['name'], eg['name']) for eg in species_data['egg_groups']],
+            "question": f"What egg group(s) does {pokemon.get('name').title()} belong to?",
+            "answer": [egg_group_cache.get(eg, eg) for eg in pokemon['egg_groups']],
             "field": "egg_group"
         },
         {
             "type": "text",
-            "question": f"What ability/abilities does {current_pokemon['name'].title()} have?",
-            "answer": [a['ability']['name'] for a in current_pokemon['abilities']],
+            "question": f"What ability/abilities does {pokemon['name'].title()} have?",
+            "answer": [a['name'] for a in pokemon['abilities']],
             "field": "ability"
         }
+
     ]
 
     # Add evolution chain question if available
-    if species_data.get('evolution_chain'):
-        try:
-            evolution_response = requests.get(
-                species_data['evolution_chain']['url'])
-            evolution_response.raise_for_status()
-            evolution_data = evolution_response.json()
+    evo_details = pokemon.get('evolution_chain_details', [])
+    if evo_details:
+        methods = []
+        # Only include evolutions where the 'from' is the current Pokémon
+        for evo in evo_details:
+            if evo.lower().startswith(pokemon['name'].lower() + " to "):
+            # The answer is the part after the colon and space
+                parts = evo.split(": ", 1)
+                if len(parts) > 1:
+                    methods.append(parts[1])
+        if methods: #only add if it evolves
+                questions.append(
+                {
+                "type": "text",
+                "question": f"How does {pokemon['name'].title()} evolve (any method)?",
+                "answer": methods,
+                "field": "evolution"
+                })
+    # get a random flavor text from our pokemon or from all_pokemon, then censor pokemon names.
+    flavor_texts = pokemon.get('flavor_text', [])
+    if flavor_texts:
+        use_current = random.random() < .65 # weight to decide current pokemon or a random one
+        if use_current:
+            chosen_text = random.choice(flavor_texts) #picks a random entry
+            names_to_censor = [pokemon['name']]
+            censored_entry = censor_pokemon_names(chosen_text, names_to_censor)
+            correct_answer = True
+        
+        else:
+            other_pokemon = random.choice([p for p in all_pokemon if p['name'] != pokemon['name']])
+            flavor_pokemon_name = other_pokemon['name']
+            other_flavor_texts = other_pokemon.get('flavor_text', [])
+            if other_flavor_texts:
+                chosen_text = random.choice(other_flavor_texts)
+                names_to_censor = [pokemon['name'], flavor_pokemon_name]
+                censored_entry = censor_pokemon_names(chosen_text, names_to_censor)
+                correct_answer = False
+            else:
+                chosen_text = random.choice(flavor_texts)
+                correct_answer = True
+        #adds this question to the list with the information above.
+        questions.append(
+            {
+                "type": "boolean",
+                "question": f"Is this a Pokédex entry for {pokemon['name'].title()}? {censored_entry}",
+                "answer": correct_answer,
+                "field": "flavor_text"
+            }
+        )
 
-            # Process evolution chain logic here (if needed)
-            # Add evolution-related questions to the `questions` list
-        except requests.RequestException:
-            pass
-
-    return questions
+    return questions    #completes questions as a list; if adding more questions, they need to go above here.
+                        #if they need logic, have them do the logic then append, simple questions can go in the upper portion
 
 
+
+
+# for boolean questions
 def check_boolean_answer(user_answer: bool, correct_answer: bool) -> bool:
     """Check if the boolean answer is correct."""
     return user_answer == correct_answer
 
-
+# for multiple correct answers, one
 def check_list_answer(user_answer: str, correct_answers: List[str], normalize_hyphens: bool = False) -> bool:
     """Check if the user's answer matches a list of correct answers."""
     user_answers = [a.strip().lower() for a in user_answer.split(',')]
@@ -85,7 +128,7 @@ def check_list_answer(user_answer: str, correct_answers: List[str], normalize_hy
 
     return any(user_answer in correct_answers for user_answer in user_answers)
 
-
+# for order independent answering (a + b or b + a, but both needed)
 def check_set_answer(user_answer: str, correct_answers: List[str]) -> bool:
     """Check if the user's answers match the correct answers as a set (order-independent)."""
     user_answers = set(a.strip().lower() for a in user_answer.split(','))
@@ -116,7 +159,7 @@ def check_weight_answer(user_answer: str, correct_weight_kg: float, margin: floa
     except ValueError:
         return False
 
-
+# ignore "pokemon" at the end of the genus
 def check_genus_answer(user_answer: str, correct_genus: str) -> bool:
     """Check if the user's genus answer matches the correct genus."""
     normalized_user_genus = normalize_string(user_answer)
@@ -124,7 +167,7 @@ def check_genus_answer(user_answer: str, correct_genus: str) -> bool:
         correct_genus).replace(" pokemon", "").replace(" pokémon", "")
     return normalized_user_genus == normalized_correct_genus
 
-
+# spelling/error tolerance
 def is_similar_string(user_answer: str, correct_answer: str, threshold: float = 0.8) -> bool:
     """Check if two strings are similar based on a similarity threshold."""
     similarity = SequenceMatcher(None, user_answer.strip(
