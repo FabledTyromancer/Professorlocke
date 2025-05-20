@@ -5,21 +5,24 @@ from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
 from my_package.utils import meters_to_feet_inches, kg_to_lbs
 from my_package.sprite_cacher import cache_sprites
 from my_package.professorlockejsongenerator import POKEMON_COUNT
+import my_package.cache_clearer as clearer
 import os
 import winsound
 import threading
 
 cache_dir = "professor_cache"
 
-
 class ProfessorLocke:
     def __init__(self, root):
+        self.cache_flag = None
         #starts the main thing
         self.ui = QuizUI(
             root,
             on_start_quiz=self.start_quiz,
             on_prev_question=self.prev_question,
-            on_next_question=self.next_question
+            on_next_question=self.next_question,
+            clear_cache=self.clear_cache
+
         )
         # label for loading data to display current status
         self.loading_label = tk.Label(root, text="", font=("Arial", 16), fg="blue")
@@ -32,7 +35,7 @@ class ProfessorLocke:
         self.set_loading_message("Initializing...")
         self.check_data(cache_dir)
         self.check_list = self.check_data(cache_dir) # what data we need to download
-        root.after(100, self.load_data()) #load/download depending on check list
+        root.after(100, self.load_data) #load/download depending on check list
 
     #checks data, returns "true" to dict
     def check_data(self, cache_dir):
@@ -61,9 +64,13 @@ class ProfessorLocke:
 
         return check_dict
 
+
+
     # data checks and downloads, from package, to show it's working and when it's ready
     def load_data(self):
         def task():
+            self.loading_label.after(0, lambda:self.loading_label.pack(pady=10))        
+            self.fetching_label.after(0, lambda:self.fetching_label.pack(pady=10))
             self.set_loading_message("Loading Pokémon data...")
             if self.check_list["poke_file"]:  #if we have it, load it, but faster.
                 self.data = fetch_pokemon_data()
@@ -90,13 +97,12 @@ class ProfessorLocke:
             self.set_loading_message("Loading Complete!")
             root.after(200)
 
-            self.loading_label.destroy()
-            self.fetching_label.destroy()
-
-            self.loading_label.destroy()  # Remove loading label when we're done
-            self.fetching_label.destroy() # remove the fetching label now that it's done
-
             
+            self.loading_label.after(0, lambda: self.loading_label.pack_forget())  # Remove loading label when we're done
+            self.fetching_label.after(0, lambda: self.fetching_label.pack_forget()) # remove the fetching label now that it's done
+
+            self.cache_flag = True
+            self.ui.root.after(0, lambda: self.ui.update_cache_button(self.cache_flag))          
 
             self.all_pokemon = self.data # set a pool of comparative data
             self.current_pokemon = None
@@ -109,19 +115,21 @@ class ProfessorLocke:
             self.string_similarity_threshold = 0.7
             self.ui.update_score(self.score, self.total_questions)
 
-        threading.Thread(target=task).start() # runs the load data function in a separate thread to avoid freezing the UI or holding it up so the labels will update
+        threading.Thread(target=task, daemon=True).start() # runs the load data function in a separate thread to avoid freezing the UI or holding it up so the labels will update
 #updates overall loading data status
     def set_loading_message(self, message: str):
         self.loading_label.config(text="")
         self.loading_label.update_idletasks()
         self.loading_label.config(text=message)
         self.loading_label.update_idletasks()
+        self.loading_label.after(0, lambda: self.loading_label.config(text=message))
 #updates specific loading data status
     def set_fetching_label(self, msg: str):
         self.fetching_label.config(text="")
         self.fetching_label.update_idletasks()
         self.fetching_label.config(text=msg)
         self.fetching_label.update_idletasks()
+        self.fetching_label.after(0, lambda: self.fetching_label.config(text=msg))
 
     def start_quiz(self, pokemon_name: str):
         if not pokemon_name.strip():
@@ -171,6 +179,20 @@ class ProfessorLocke:
         if self.current_question_index < len(self.questions) - 1:
             self.current_question_index += 1
             self.show_current_question()
+    # Delete cache function for the button
+    def clear_cache(self):
+        def clear():
+            if self.cache_flag:
+                clearer.main(status_callback=self.set_loading_message)
+                self.cache_flag = False #says we don't have a cache, disabling the button
+                self.check_list = self.check_data(cache_dir) # Rebuild list of directories
+                root.after(100, self.load_data) # Reload data
+            else:
+                print(f"no cache to clear")
+        threading.Thread(target=clear, daemon=True).start() # threading to work easier.
+    
+        
+
     #show the current question
     def show_current_question(self):
         question = self.questions[self.current_question_index]
@@ -184,6 +206,11 @@ class ProfessorLocke:
             can_go_prev=self.current_question_index > 0,
             can_go_next=self.current_question_index < len(self.questions) - 1
         )
+
+        self.ui.update_cache_button(
+            cache_issue = self.cache_flag
+        )
+    
     # you probably get the gist, answer submits
     def submit_answer(self, user_answer: str):
         question = self.questions[self.current_question_index]
@@ -196,19 +223,19 @@ class ProfessorLocke:
             self.ui.show_feedback("Correct!", "green")
             winsound.PlaySound(self.ui.correct_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
         elif close_match:
-            self.score += 1
+            self.score += .5
             correct_answer = question["answer"]
             if isinstance(correct_answer, list):
                 correct_answer = ", ".join(correct_answer)
             self.ui.show_feedback(
-                f"Partially Correct! The correct answer is: {correct_answer}", "orange")
+                f"Partially Correct! The correct answer is:\n{correct_answer}", "orange")
             winsound.PlaySound(self.ui.partial_correct_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
         else:
             correct_answer = question["answer"]
             if isinstance(correct_answer, list):
                 correct_answer = "\n".join(correct_answer)
             self.ui.show_feedback(
-                f"Incorrect! The correct answer is: \n{correct_answer}", "red")
+                f"Incorrect! The correct answer is:\n{correct_answer}", "red")
             winsound.PlaySound(self.ui.incorrect_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
 
 

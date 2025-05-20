@@ -4,6 +4,7 @@ from typing import Dict, List, Union, Tuple
 from my_package.utils import meters_to_feet_inches, kg_to_lbs, censor_pokemon_names
 from difflib import SequenceMatcher
 import unicodedata
+import re
 
 def normalize_string(input_string: str) -> str:
     """Normalize a string by converting to lowercase and removing accents."""
@@ -170,10 +171,24 @@ def check_genus_answer(user_answer: str, correct_genus: str) -> bool:
 # spelling/error tolerance
 def is_similar_string(user_answer: str, correct_answer: str, threshold: float = 0.8) -> bool:
     """Check if two strings are similar based on a similarity threshold."""
+    # check if "level-up at level" and compare for similarity
+    user_level = extract_level(user_answer)
+    correct_level = extract_level(correct_answer)
+    if user_level is not None and correct_level is not None:
+        if abs(user_level - correct_level) <= 1: #if you only want to get exact level matches, set this to 0, or comment the code out entirely
+            return True
+        else:
+            return False
+
     similarity = SequenceMatcher(None, user_answer.strip(
     ).lower(), correct_answer.strip().lower()).ratio()
     return similarity >= threshold
-
+# pull out levels to compare for similarity
+def extract_level(s: str):
+    match = re.search(r'level\s*(?:up\s*at\s*)?level\s*(\d+)', s.lower())
+    if match:
+        return int(match.group(1))
+    return None
 
 def check_answer(user_answer: Union[str, bool], question: Dict, current_pokemon: Dict, leniency: float = 0.15, string_similarity_threshold: float = 0.8) -> Tuple[bool, bool]:
     """Main function to check the user's answer based on the question type."""
@@ -198,9 +213,19 @@ def check_answer(user_answer: Union[str, bool], question: Dict, current_pokemon:
                         for correct in correct_answers
                     )
             elif question["field"] in ["ability", "evolution"]:
-                normalize_hyphens = question["field"] == "ability"
+                normalize_hyphens = question["field"] == "ability" or question["field"] == "evolution"
                 exact_match = check_list_answer(
                     user_answer, question["answer"], normalize_hyphens)
+                if not exact_match:
+                    user_answers = [a.strip().lower().replace('-', ' ') for a in user_answer.split(',')]
+                    correct_answers = [a.lower().replace('-', ' ') for a in question["answer"]]
+                    close_match = any(
+                        is_similar_string(
+                            user, correct, threshold=string_similarity_threshold)
+                        for user in user_answers
+                        for correct in correct_answers
+                    )
+
         elif question["field"] == "height":
             exact_match = check_height_answer(
                 user_answer, current_pokemon['height'], leniency)

@@ -7,23 +7,27 @@ import io
 import winsound
 import os
 
+
 DEFAULT_FONT = ('Arial', 16)
+FEEDBACK_FONT = ('Arial', 14)
 
 cache_dir = "professor_cache"
   
 
 
 class QuizUI:
-    def __init__(self, root: tk.Tk, on_start_quiz: Callable[[str], None], on_prev_question: Callable, on_next_question: Callable):
+    def __init__(self, root: tk.Tk, on_start_quiz: Callable[[str], None], on_prev_question: Callable, on_next_question: Callable, clear_cache: Callable):
         """Initialize the UI."""
         self.root = root
         self.on_start_quiz = on_start_quiz
         self.on_prev_question = on_prev_question
         self.on_next_question = on_next_question
+        self.clear_cache = clear_cache
 
         self.root.title("ProfessorLocke")
         self.root.geometry("600x550")
         self.root.option_add('*Font', DEFAULT_FONT)
+        self.root.option_add('*Font', FEEDBACK_FONT)
 
         # Initialize UI elements
         self.score_label = None
@@ -80,6 +84,10 @@ class QuizUI:
         self.next_button = ttk.Button(
             nav_frame, text="Next", command=self.on_next_question, state="disabled", style='Large.TButton')
         self.next_button.pack(side="right", padx=5)
+        self.clear_cache_button = ttk.Button(
+            nav_frame, text="Reset\nCache", command=self.clear_cache, state="disabled", style='warning.Outline.TButton')
+        self.clear_cache_button.pack(side="bottom", padx=5)
+
 
         # Score label
         self.score_label = ttk.Label(
@@ -94,6 +102,7 @@ class QuizUI:
         style = ttk.Style()
         style.configure('Large.TButton', font=DEFAULT_FONT)
         style.configure('Large.TRadiobutton', font=DEFAULT_FONT)
+        style.configure('warning.Outline.TButton', font=FEEDBACK_FONT, foreground='red', borderwidth=2)
 
     def update_score(self, score: int, total_questions: int):
         """Update the score label."""
@@ -103,6 +112,9 @@ class QuizUI:
         """Enable or disable navigation buttons."""
         self.prev_button.config(state="normal" if can_go_prev else "disabled")
         self.next_button.config(state="normal" if can_go_next else "disabled")
+    
+    def update_cache_button(self, cache_issue: bool):
+        self.clear_cache_button.config(state="normal" if cache_issue else "disabled")
 
     def clear_question_frame(self):
         """Clear all widgets from the question frame."""
@@ -213,7 +225,7 @@ class QuizUI:
             widget.destroy()
 
         feedback_label = ttk.Label(
-            self.feedback_frame, text=message, font=DEFAULT_FONT, foreground=color)
+            self.feedback_frame, text=message, font=FEEDBACK_FONT, foreground=color)
         feedback_label.pack(pady=5)
 
         # Automatically remove feedback after x seconds(In milliseconds)

@@ -1,32 +1,16 @@
+import re
 import requests
 import json
 import time
-import os
-import re
-import tkinter as tk
-from tkinter import ttk
-import my_package.regional_variant_script as variant
 
-
-POKEMON_COUNT = 20 # Current mon number, adjust if there's more in the future lmao
 API_BASE = "https://pokeapi.co/api/v2/"
 
+def get_pokemon_entry(id, spec_id=None, status_callback=None):
+    try:
+        pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json()
 
-def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch them all (data that is)
-    try:  # I love error handling
-        pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json() #pokemon file
-        species_resp = requests.get(API_BASE + f"pokemon-species/{id}").json() #pokemon species file
-
-        #fetch namme
         name = pokemon_resp["name"]
-        #fetch genus
-        genus = []
-        for gen in species_resp["genera"]:
-            if gen.get("language", {}).get("name") == "en":  # Ensure it's in English
-                genus.append(gen["genus"])
-        #fetch types
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
-        #fetch all abilities
         abilities = []
         for a in pokemon_resp["abilities"]:
             ability_name = a["ability"]["name"]
@@ -35,14 +19,18 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
                 "name": ability_name,
                 "short_effect": ability_effect
             })
-        #fetch height & weight
         height = pokemon_resp["height"]
         weight = pokemon_resp["weight"]
-        #fetch held item if it can have one 
         held_items = [item["item"]["name"]
                       for item in pokemon_resp["held_items"]]
-        #fetch front_default sprite url, for sprite caching later
         sprite = pokemon_resp["sprites"]["front_default"]
+        spec_url = pokemon_resp["species"]["url"]
+        spec_id = extract_spec_id_from_url(spec_url)
+        species_resp = requests.get(API_BASE + f"pokemon-species/{spec_id}").json()
+        genus = []
+        for gen in species_resp["genera"]:
+            if gen.get("language", {}).get("name") == "en":  # Ensure it's in English
+                genus.append(gen["genus"])
 
         #fetch egg groups
         egg_groups = [e["name"] for e in species_resp["egg_groups"]]
@@ -63,20 +51,6 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             evolution_chain = extract_evolution_chain(evo_chain_data["chain"])
             triggers = extract_evolution_chain_details(evo_chain_data["chain"])
 
-        variants = []
-        forms = []
-        varieties = species_resp.get("varieties", [])
-        for v in varieties:
-            if not v.get("is_default", True):
-                forms.append(v.get("pokemon", {}).get("name", ""))
-                url = v.get("pokemon", {}).get("url", "")
-                if url:
-                    variant_id = extract_id_from_url(url)
-                    if variant_id:
-                        variants.append(variant_id)
-
-
-
         #if you pull more data from a pokemon, you'll have to add it here, as this is the json build
         return {
             "id": id,  # Add the Pokémon ID here
@@ -92,8 +66,6 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "evolution_chain": evolution_chain,
             "evolution_chain_details": triggers,
             "sprite_url": sprite,
-            "forms": forms,
-            "variants": variants
             
         }
     except Exception as e:
@@ -101,12 +73,6 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
         if status_callback:
             status_callback(f"Error fetching Pokémon ID {id}: {e}")
         return None
-    
-def extract_id_from_url(url):
-    match = re.search(r'/pokemon/(\d+)/', url)
-    if match:
-        return int(match.group(1))
-    return None
 
 def get_ability_effect(ability_name):
     """Fetch the short_effect of an ability by its name."""
@@ -242,36 +208,23 @@ def clean_evolution_detail(detail):
     return detail
 
 
-def main(status_callback=None):
-    all_pokemon = []
-    all_variants = set()
-    for i in range(1, POKEMON_COUNT + 1):
-        msg = f"Fetching Pokémon ID {i}/{POKEMON_COUNT}..."
+
+
+def extract_spec_id_from_url(url):
+    match = re.search(r'/pokemon-species/(\d+)/', url)
+    if match:
+        return int(match.group(1))
+    return None
+
+def main(variants: list, status_callback=None):
+    all_forms = []
+    for i in variants:
+        msg = f"Fetching Pokémon variety {i}..."
         print(msg)
         if status_callback:
             status_callback(msg)
         entry = get_pokemon_entry(i, status_callback)
         if entry:
-            all_pokemon.append(entry)
-            print("Variants to add:", entry.get("variants", []))
-            all_variants.update(entry.get("variants", []))
-            print(entry.get("variants", []))
-        time.sleep(0.5)  # Respect API limits (critical)
-    
-    if all_variants:
-        variant_entries = variant.main(list(all_variants), status_callback)
-        all_pokemon.extend(variant_entries)
-
-
-    cache_dir = "professor_cache"
-    poke_file = os.path.join(cache_dir, "professordata.json")
-    os.makedirs(cache_dir, exist_ok=True)
-    with open(poke_file, "w") as c:
-        json.dump(all_pokemon, c, indent=2)
-
-    print("Saved professordata.json successfully!")
-    if status_callback:
-        status_callback("Saved professordata.json successfully!")
-
-if __name__ == "__main__":
-    main()
+            all_forms.append(entry)
+        time.sleep(.5)
+    return all_forms
