@@ -8,7 +8,7 @@ from tkinter import ttk
 import my_package.regional_variant_script as variant
 
 
-POKEMON_COUNT = 20 # Current mon number, adjust if there's more in the future lmao
+POKEMON_COUNT = 1 # Current mon number, adjust if there's more in the future lmao
 API_BASE = "https://pokeapi.co/api/v2/"
 
 
@@ -62,18 +62,51 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             evo_chain_data = requests.get(evo_chain_url).json()
             evolution_chain = extract_evolution_chain(evo_chain_data["chain"])
             triggers = extract_evolution_chain_details(evo_chain_data["chain"])
+        
+        # fetch forms with no battle differences
+        #forms = []
+        #formsprites = []
+        #form = pokemon_resp.get("forms", [])
+        #for fo in form:
+        #    formname = fo.get("name")
+        #    if formname != name:
+        #        forms.append(formname)
+        #        formurl = fo.get("url")
+        #        formid = extract_id_from_url(formurl)
+        #        formresp = requests.get(API_BASE + f"pokemon-form/{formid}").json()
+        #        formsprites.append(formresp["sprites"]["front_default"])
 
-        variants = []
-        forms = []
+
+
+        # fetch forms and variants with battle differences; combine into different lists and return them for different uses
+        variants_to_fetch = [] # variants_to_fetch becomes runnable quiz targets, and will be pulled using the variant script
+        variants = [] # just listable for question purposes since we're already handling the data, even if we aren't fetching it.
         varieties = species_resp.get("varieties", [])
         for v in varieties:
+            varname = v.get("pokemon", {}).get("name", "")
             if not v.get("is_default", True):
-                forms.append(v.get("pokemon", {}).get("name", ""))
-                url = v.get("pokemon", {}).get("url", "")
-                if url:
-                    variant_id = extract_id_from_url(url)
-                    if variant_id:
-                        variants.append(variant_id)
+                variants.append(varname) #adds all varieties to list for possible question use
+                unwanted_variants_to_fetch = [
+                    "-gmax",
+                    "-totem",
+                    "-cap",
+                    "-belle",
+                    "-libre",
+                    "-cosplay",
+                    "-phd",
+                    "-pop-star",
+                    "-rock-star",
+                    "-ash",
+                    "-small",
+                    "-large",
+                    "-super"
+                    ] # add varieties you don't want to see here, such as -mega or -alola (or whatever region)
+                if not any(uv in varname for uv in unwanted_variants_to_fetch): # if not unwanted
+                    url = v.get("pokemon", {}).get("url", "") #get the URL
+                    if url:
+                        variant_id = extract_id_from_url(url) #strip the ID from the URL, we're going to run it back through
+                        if variant_id:
+                            variants_to_fetch.append(variant_id) #variant ID is saved as information in the json building so it's easily findable
 
 
 
@@ -92,8 +125,10 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "evolution_chain": evolution_chain,
             "evolution_chain_details": triggers,
             "sprite_url": sprite,
-            "forms": forms,
-            "variants": variants
+            #"form_sprite_url": formsprites,
+            #"forms": forms,
+            "variants": variants,
+            "fetched_variants": variants_to_fetch
             
         }
     except Exception as e:
@@ -101,9 +136,12 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
         if status_callback:
             status_callback(f"Error fetching Pokémon ID {id}: {e}")
         return None
-    
+    # shake that URL down for the good stuff
 def extract_id_from_url(url):
     match = re.search(r'/pokemon/(\d+)/', url)
+    if match:
+        return int(match.group(1))
+    match = re.search(r'pokemon-form/(\d+)/', url)
     if match:
         return int(match.group(1))
     return None
@@ -244,7 +282,7 @@ def clean_evolution_detail(detail):
 
 def main(status_callback=None):
     all_pokemon = []
-    all_variants = set()
+    all_variants = set() # we add variants here to pull and append at the end
     for i in range(1, POKEMON_COUNT + 1):
         msg = f"Fetching Pokémon ID {i}/{POKEMON_COUNT}..."
         print(msg)
@@ -253,13 +291,13 @@ def main(status_callback=None):
         entry = get_pokemon_entry(i, status_callback)
         if entry:
             all_pokemon.append(entry)
-            print("Variants to add:", entry.get("variants", []))
-            all_variants.update(entry.get("variants", []))
-            print(entry.get("variants", []))
+            print("Variants to add:", entry.get("fetched_variants", []))
+            all_variants.update(entry.get("fetched_variants", []))
+            print(entry.get("fetched_variants", []))
         time.sleep(0.5)  # Respect API limits (critical)
     
     if all_variants:
-        variant_entries = variant.main(list(all_variants), status_callback)
+        variant_entries = variant.main(list(all_variants), status_callback) # runs a different version of this scripting process and pulls it back
         all_pokemon.extend(variant_entries)
 
 

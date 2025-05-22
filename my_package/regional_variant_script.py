@@ -3,11 +3,12 @@ import requests
 import json
 import time
 
+VARIANT_COUNT = 0
 API_BASE = "https://pokeapi.co/api/v2/"
-
+# same as json generator; if you add more to json generator, you'll want to add it here as well
 def get_pokemon_entry(id, spec_id=None, status_callback=None):
     try:
-        pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json()
+        pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json() # we hold off on assigning species, as we need to pull it from the variant page, since it can't be passed normally
 
         name = pokemon_resp["name"]
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
@@ -24,13 +25,42 @@ def get_pokemon_entry(id, spec_id=None, status_callback=None):
         held_items = [item["item"]["name"]
                       for item in pokemon_resp["held_items"]]
         sprite = pokemon_resp["sprites"]["front_default"]
+        #so we move all the pokemon_resp stuff up, then we extract the species ID from the URL
         spec_url = pokemon_resp["species"]["url"]
-        spec_id = extract_spec_id_from_url(spec_url)
-        species_resp = requests.get(API_BASE + f"pokemon-species/{spec_id}").json()
+        spec_id = extract_spec_id_from_url(spec_url) #here's where the magic happens
+        species_resp = requests.get(API_BASE + f"pokemon-species/{spec_id}").json() #now we can pull species for those deets
+        GENUS_OVERRIDES = {
+            "ponyta-galar": ["Unique Horn Pok\u00e9mon"],
+            "rapidash-galar": ["Unique Horn Pok\u00e9mon"], 
+            "growlithe-hisui": ["Scout Pok\u00e9mon"], 
+            "voltorb-hisui": ["Sphere Pok\u00e9mon"], 
+            "electrode-hisui": ["Sphere Pok\u00e9mon"], 
+            "mr-mime-galar": ["Dancing Pok\u00e9mon"], 
+            "articuno-galar": ["Cruel Pok\u00e9mon"], 
+            "zapdos-galar": ["Strong Legs Pok\u00e9mon"], 
+            "moltres-galar": ["Malevolent Pok\u00e9mon"],
+            "typholosion-hisui": ["Ghost Flame Pok\u00e9mon"],
+            "wooper-paldea": ["Mud Fish Pok\u00e9mon"],
+            "slowking-galar": ["Hexpert Pok\u00e9mon"],
+            "lilligant-hisui": ["Spinning Pok\u00e9mon"],
+            "darumanitan-galar": ["Zen Charm Pok\u00e9mon"],
+            "zorua-hisui": ["Spiteful Fox Pok\u00e9mon"],
+            "zoroark-hisui": ["Baneful Fox Pok\u00e9mon"],
+            "braviary-hisui": ["Battle Cry Pok\u00e9mon"],
+            "sliggoo-hisui": ["Snail Pok\u00e9mon"],
+            "goodra-hisui": ["Shell Bunker Pok\u00e9mon"]
+        } #so genuses are encoded at the species level in the API. This fixes the few bugs as a result.
+        # If new regions add new regional forms that use the same species but have different genuses, you'll need to manually add them.
+
         genus = []
         for gen in species_resp["genera"]:
             if gen.get("language", {}).get("name") == "en":  # Ensure it's in English
                 genus.append(gen["genus"])
+        if name in GENUS_OVERRIDES: # if needs genus fix,
+            genus = GENUS_OVERRIDES[name] #apply genus fix
+
+        # from here it's largely the same as the base script, hence original base script notes.
+        # I can only copy paste and delete stuff so much
 
         #fetch egg groups
         egg_groups = [e["name"] for e in species_resp["egg_groups"]]
@@ -67,7 +97,7 @@ def get_pokemon_entry(id, spec_id=None, status_callback=None):
             "evolution_chain_details": triggers,
             "sprite_url": sprite,
             
-        }
+        } # no forms or variants here, as they should be covered in the base script. If we come to needing it, we can add it in similarly, but stuff will get real dicey
     except Exception as e:
         print(f"Error fetching Pokémon ID {id}: {e}")
         if status_callback:
@@ -209,17 +239,19 @@ def clean_evolution_detail(detail):
 
 
 
-
+# needed to handle pokemon to species for variants, as variants are the same species.
 def extract_spec_id_from_url(url):
     match = re.search(r'/pokemon-species/(\d+)/', url)
     if match:
         return int(match.group(1))
     return None
 
-def main(variants: list, status_callback=None):
+def main(fetched_variants: list, status_callback=None):
+    global VARIANT_COUNT
     all_forms = []
-    for i in variants:
-        msg = f"Fetching Pokémon variety {i}..."
+    VARIANT_COUNT = len(all_forms)
+    for i in fetched_variants:
+        msg = f"Fetching Pokémon variety {i}/{VARIANT_COUNT}..."
         print(msg)
         if status_callback:
             status_callback(msg)
@@ -227,4 +259,5 @@ def main(variants: list, status_callback=None):
         if entry:
             all_forms.append(entry)
         time.sleep(.5)
-    return all_forms
+    VARIANT_COUNT = len(all_forms)
+    return all_forms #sends it back

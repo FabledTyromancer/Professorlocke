@@ -59,9 +59,13 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
     evo_details = pokemon.get('evolution_chain_details', [])
     if evo_details:
         methods = []
+        base_name = pokemon['name']
+        for suffix in ["-alola", "-galar", "-hisui", "-paldea"]:
+            if base_name.endswith(suffix):
+                base_name = base_name.removesuffix(suffix)
         # Only include evolutions where the 'from' is the current Pokémon
         for evo in evo_details:
-            if evo.lower().startswith(pokemon['name'].lower() + " to "):
+            if evo.lower().startswith(base_name.lower() + " to "):
             # The answer is the part after the colon and space
                 parts = evo.split(": ", 1)
                 if len(parts) > 1:

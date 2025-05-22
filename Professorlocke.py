@@ -3,8 +3,9 @@ from my_package.ui import QuizUI
 from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
 from my_package.utils import meters_to_feet_inches, kg_to_lbs
-from my_package.sprite_cacher import cache_sprites
+from my_package.sprite_cacher import cache_sprites, FORM_COUNT
 from my_package.professorlockejsongenerator import POKEMON_COUNT
+from my_package.regional_variant_script import VARIANT_COUNT
 import my_package.cache_clearer as clearer
 import os
 import winsound
@@ -55,7 +56,7 @@ class ProfessorLocke:
         if os.path.exists(sprites_dir): #sprites directory
                 list = os.listdir(sprites_dir)
                 spritecount = len(list)
-                if spritecount == POKEMON_COUNT: #do we have all the sprites? current mon number, tied to the number generating your json.
+                if spritecount == POKEMON_COUNT + VARIANT_COUNT + FORM_COUNT: #do we have all the sprites? current mon number, tied to the number generating your json.
                     check_dict["sprites_dir"] = True
 
         if os.path.exists(egg_file): #eggs
