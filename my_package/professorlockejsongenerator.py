@@ -8,7 +8,7 @@ from tkinter import ttk
 import my_package.regional_variant_script as variant
 
 
-POKEMON_COUNT = 1025 # Current mon number, adjust if there's more in the future lmao
+POKEMON_COUNT = 1 # Current mon number, adjust if there's more in the future lmao
 API_BASE = "https://pokeapi.co/api/v2/"
 
 
@@ -26,6 +26,18 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
                 genus.append(gen["genus"])
         #fetch types
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
+        
+        #stats = []
+        #for s in pokemon_resp["stats"]:
+        #    statname = s["stats"]["name"]
+        #    basestat = s["stats"]["base_stat"]
+        #    effort = s["effort"]
+        #    stats.append({
+        #        "stat": statname,
+        #        "base_stat": basestat,
+        #        "effort": effort
+        #    })
+
         #fetch all abilities
         abilities = []
         for a in pokemon_resp["abilities"]:
@@ -49,11 +61,13 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
 
         #fetch dex entries
         flavor_texts = []  # Create a list to store all English flavor texts
+        versions = []
         flavor_text_entries = species_resp.get("flavor_text_entries", [])
         for f in flavor_text_entries:
                 if f.get("language", {}).get("name") == "en":  # Ensure it's in English
                     flavor_texts.append(f.get("flavor_text", ""))  # Append to the list
                     flavor_texts = list(set(flavor_texts))  # Remove duplicates
+                    versions.append(f.get("version"))
 
         #fetch evolution chain (all entries) and details
         evolution_chain = []
@@ -117,6 +131,7 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "name": name,
             "genus": genus,
             "flavor_text": flavor_texts,
+            "versions": versions,
             "types": types,
             "abilities": abilities,
             "height": height,

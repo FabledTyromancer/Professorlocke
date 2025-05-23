@@ -12,6 +12,11 @@ import threading
 
 cache_dir = "professor_cache"
 
+#import tracemalloc
+#tracemalloc.start()
+# Your code here
+
+
 class ProfessorLocke:
     def __init__(self, root):
         self.cache_flag = None
@@ -56,14 +61,20 @@ class ProfessorLocke:
         if os.path.exists(sprites_dir): #sprites directory
                 FORM_COUNT = 0
                 VARIANT_COUNT = 0
-                forms = [f for f in self.data if f.get("forms")]
-                formurl = [furl for furl in self.data if furl.get("form_sprite_url")]
+                try:
+                    forms = [f for f in self.data if f.get("forms")]
+                    formurl = [furl for furl in self.data if furl.get("form_sprite_url")]
+                except Exception as e:
+                    print(f"Error identifying forms: {e}")
                 try: 
                     FORM_COUNT += len([1 for form_name, form_url in zip(forms, formurl) if form_url and form_name])
                 except Exception as e:
                     print(f"Error calculating FORM_COUNT: {e}")
-                variant = [v for v in self.data if v.get("variants")]
-                fetchedvariant = [fv for fv in self.data if fv.get("fetched_variants")]
+                try:
+                    variant = [v for v in self.data if v.get("variants")]
+                    fetchedvariant = [fv for fv in self.data if fv.get("fetched_variants")]
+                except Exception as e:
+                    print(f"Error identifying forms: {e}")
                 try:
                     VARIANT_COUNT += len([1 for variant_name, fetched_variant in zip(variant, fetchedvariant) if fetched_variant and variant_name])
                 except Exception as e:
@@ -274,3 +285,8 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ProfessorLocke(root)
     root.mainloop()
+
+#current, peak = tracemalloc.get_traced_memory()
+#print(f"Current memory usage: {current / (1024 * 1024)} MB")
+#print(f"Peak memory usage: {peak / (1024 * 1024)} MB")
+#tracemalloc.stop()
