@@ -3,9 +3,8 @@ from my_package.ui import QuizUI
 from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
 from my_package.utils import meters_to_feet_inches, kg_to_lbs
-from my_package.sprite_cacher import cache_sprites, FORM_COUNT
+from my_package.sprite_cacher import cache_sprites
 from my_package.professorlockejsongenerator import POKEMON_COUNT
-from my_package.regional_variant_script import VARIANT_COUNT
 import my_package.cache_clearer as clearer
 import os
 import winsound
@@ -52,8 +51,23 @@ class ProfessorLocke:
 
         if os.path.exists(poke_file): #professordata.json
             check_dict["poke_file"] = True
+            self.data = fetch_pokemon_data()
 
         if os.path.exists(sprites_dir): #sprites directory
+                FORM_COUNT = 0
+                VARIANT_COUNT = 0
+                forms = [f for f in self.data if f.get("forms")]
+                formurl = [furl for furl in self.data if furl.get("form_sprite_url")]
+                try: 
+                    FORM_COUNT += len([1 for form_name, form_url in zip(forms, formurl) if form_url and form_name])
+                except Exception as e:
+                    print(f"Error calculating FORM_COUNT: {e}")
+                variant = [v for v in self.data if v.get("variants")]
+                fetchedvariant = [fv for fv in self.data if fv.get("fetched_variants")]
+                try:
+                    VARIANT_COUNT += len([1 for variant_name, fetched_variant in zip(variant, fetchedvariant) if fetched_variant and variant_name])
+                except Exception as e:
+                    print(f"Error calculating VARIANT_COUNT: {e}")
                 list = os.listdir(sprites_dir)
                 spritecount = len(list)
                 if spritecount == POKEMON_COUNT + VARIANT_COUNT + FORM_COUNT: #do we have all the sprites? current mon number, tied to the number generating your json.

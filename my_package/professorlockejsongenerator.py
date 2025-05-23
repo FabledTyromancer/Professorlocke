@@ -8,7 +8,7 @@ from tkinter import ttk
 import my_package.regional_variant_script as variant
 
 
-POKEMON_COUNT = 1 # Current mon number, adjust if there's more in the future lmao
+POKEMON_COUNT = 1025 # Current mon number, adjust if there's more in the future lmao
 API_BASE = "https://pokeapi.co/api/v2/"
 
 
@@ -64,17 +64,17 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             triggers = extract_evolution_chain_details(evo_chain_data["chain"])
         
         # fetch forms with no battle differences
-        #forms = []
-        #formsprites = []
-        #form = pokemon_resp.get("forms", [])
-        #for fo in form:
-        #    formname = fo.get("name")
-        #    if formname != name:
-        #        forms.append(formname)
-        #        formurl = fo.get("url")
-        #        formid = extract_id_from_url(formurl)
-        #        formresp = requests.get(API_BASE + f"pokemon-form/{formid}").json()
-        #        formsprites.append(formresp["sprites"]["front_default"])
+        forms = []
+        formsprites = []
+        form = pokemon_resp.get("forms", [])
+        for fo in form:
+            formname = fo.get("name")
+            if formname != name:
+                forms.append(formname)
+                formurl = fo.get("url")
+                formid = extract_id_from_url(formurl)
+                formresp = requests.get(API_BASE + f"pokemon-form/{formid}").json()
+                formsprites.append(formresp["sprites"]["front_default"])
 
 
 
@@ -99,7 +99,8 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
                     "-ash",
                     "-small",
                     "-large",
-                    "-super"
+                    "-super",
+                    "-starter"
                     ] # add varieties you don't want to see here, such as -mega or -alola (or whatever region)
                 if not any(uv in varname for uv in unwanted_variants_to_fetch): # if not unwanted
                     url = v.get("pokemon", {}).get("url", "") #get the URL
@@ -125,8 +126,8 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "evolution_chain": evolution_chain,
             "evolution_chain_details": triggers,
             "sprite_url": sprite,
-            #"form_sprite_url": formsprites,
-            #"forms": forms,
+            "form_sprite_url": formsprites,
+            "forms": forms,
             "variants": variants,
             "fetched_variants": variants_to_fetch
             

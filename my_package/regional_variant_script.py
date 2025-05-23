@@ -3,7 +3,7 @@ import requests
 import json
 import time
 
-VARIANT_COUNT = 0
+
 API_BASE = "https://pokeapi.co/api/v2/"
 # same as json generator; if you add more to json generator, you'll want to add it here as well
 def get_pokemon_entry(id, spec_id=None, status_callback=None):
@@ -247,7 +247,6 @@ def extract_spec_id_from_url(url):
     return None
 
 def main(fetched_variants: list, status_callback=None):
-    global VARIANT_COUNT
     all_forms = []
     VARIANT_COUNT = len(all_forms)
     for i in fetched_variants:
@@ -259,5 +258,4 @@ def main(fetched_variants: list, status_callback=None):
         if entry:
             all_forms.append(entry)
         time.sleep(.5)
-    VARIANT_COUNT = len(all_forms)
     return all_forms #sends it back
