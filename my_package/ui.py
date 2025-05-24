@@ -14,13 +14,14 @@ cache_dir = "professor_cache"
 
 
 class QuizUI:
-    def __init__(self, root: tk.Tk, on_start_quiz: Callable[[str], None], on_prev_question: Callable, on_next_question: Callable, clear_cache: Callable):
+    def __init__(self, root: tk.Tk, on_start_quiz: Callable[[str], None], on_prev_question: Callable, on_next_question: Callable, clear_cache: Callable, on_unit_toggle: Callable[[bool], None]):
         """Initialize the UI."""
         self.root = root
         self.on_start_quiz = on_start_quiz
         self.on_prev_question = on_prev_question
         self.on_next_question = on_next_question
         self.clear_cache = clear_cache
+        self.on_unit_toggle = on_unit_toggle
 
         self.root.title("ProfessorLocke")
         #self.root.geometry("600x550") #for stable image size
@@ -35,6 +36,7 @@ class QuizUI:
         self.prev_button = None
         self.next_button = None
         self.pokemon_entry = None
+        self.unit_var = None  # For unit toggle
 
         # Themes for answers
         self.correct_sound = os.path.join(cache_dir, "correct.wav")
@@ -62,6 +64,23 @@ class QuizUI:
         ttk.Button(search_frame, text="Start Quiz", command=lambda: self.on_start_quiz(
             self.pokemon_entry.get().strip()), style='Large.TButton').pack(side="left", padx=5)
 
+        # Unit toggle frame
+        unit_frame = ttk.Frame(self.root)
+        unit_frame.pack(pady=5, padx=10, fill="x")
+        
+        self.unit_var = tk.BooleanVar(value=True)  # True for metric, False for imperial
+        self.unit_button = ttk.Button(
+            unit_frame, 
+            text="m/kg", 
+            command=self.toggle_units,
+            style='Large.TButton'
+        )
+        self.unit_button.pack(side="left", padx=5)
+
+        self.clear_cache_button = ttk.Button(
+            unit_frame, text="Reset Cache", command=self.clear_cache, state="disabled", style='warning.Outline.TButton')
+        self.clear_cache_button.pack(side="right", padx=5)
+
         # Question frame
         self.question_frame = ttk.Frame(self.root)
         self.question_frame.pack(pady=5, padx=10, fill="both", expand=True)
@@ -69,7 +88,6 @@ class QuizUI:
         # Feedback frame
         self.feedback_frame = ttk.Frame(self.root)
         self.feedback_frame.pack(pady=5, padx=10, fill="x")
-
 
         # Navigation frame
         nav_frame = ttk.Frame(self.root)
@@ -82,10 +100,6 @@ class QuizUI:
         self.next_button = ttk.Button(
             nav_frame, text="Next", command=self.on_next_question, state="disabled", style='Large.TButton')
         self.next_button.pack(side="right", padx=5)
-        self.clear_cache_button = ttk.Button(
-            nav_frame, text="Reset\nCache", command=self.clear_cache, state="disabled", style='warning.Outline.TButton')
-        self.clear_cache_button.pack(side="bottom", padx=5)
-
 
         # Score label
         self.score_label = ttk.Label(
@@ -100,6 +114,7 @@ class QuizUI:
         style = ttk.Style()
         style.configure('Large.TButton', font=DEFAULT_FONT)
         style.configure('Large.TRadiobutton', font=DEFAULT_FONT)
+        style.configure('Large.TCheckbutton', font=DEFAULT_FONT)
         style.configure('warning.Outline.TButton', font=FEEDBACK_FONT, foreground='red', borderwidth=2)
 
     def update_score(self, score: int, total_questions: int):
@@ -184,7 +199,19 @@ class QuizUI:
             if os.path.isfile(sprite_path):
                 image = Image.open(sprite_path)
                 if grayscale:
-                    image = ImageOps.grayscale(image)
+                    # Convert to RGBA if not already
+                    if image.mode != 'RGBA':
+                        image = image.convert('RGBA')
+                    
+                    # Split the image into channels
+                    r, g, b, a = image.split()
+                    
+                    # Convert RGB to grayscale while preserving alpha
+                    gray = ImageOps.grayscale(image)
+                    
+                    # Create new image with grayscale RGB and original alpha
+                    image = Image.merge('RGBA', (gray, gray, gray, a))
+                
                 image = image.resize((200, 200), Image.Resampling.LANCZOS)
                 photo = ImageTk.PhotoImage(image)
                 self.sprite_label.config(image=photo)
@@ -228,3 +255,9 @@ class QuizUI:
 
         # Automatically remove feedback after x seconds(In milliseconds)
         self.root.after(5000, feedback_label.destroy)
+
+    def toggle_units(self):
+        """Toggle between metric and imperial units."""
+        self.unit_var.set(not self.unit_var.get())
+        self.unit_button.config(text="m/kg" if self.unit_var.get() else "ft-in/lbs")
+        self.on_unit_toggle(self.unit_var.get())

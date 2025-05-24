@@ -1,5 +1,13 @@
 import re
 
+# Global unit system setting
+USE_METRIC = True
+
+def set_unit_system(use_metric: bool):
+    """Set the unit system to use (True for metric, False for imperial)."""
+    global USE_METRIC
+    USE_METRIC = use_metric
+
 def meters_to_feet_inches(meters: float) -> str:
     """Convert meters to feet and inches."""
     total_inches = meters * 39.3701
@@ -7,15 +15,58 @@ def meters_to_feet_inches(meters: float) -> str:
     inches = round(total_inches % 12)
     return f"{feet}'{inches}\""
 
+def format_height(height_dm: float) -> str:
+    """Format height based on the current unit system."""
+    height_m = height_dm / 10
+    if USE_METRIC:
+        return f"{height_m:.1f}m"
+    else:
+        return meters_to_feet_inches(height_m)
 
 def kg_to_lbs(kg: float) -> float:
     """Convert kilograms to pounds."""
     return kg * 2.20462
 
-#censor function, name based
+def format_weight(weight_kg: float) -> float:
+    """Format weight based on the current unit system."""
+    if USE_METRIC:
+        return f"{weight_kg:.1f}kg"
+    else:
+        return f"{round(kg_to_lbs(weight_kg), 1)}lbs"
+
+def get_base_name(name: str) -> str:
+    """Extract the base name from a Pokémon name, handling regional variants."""
+    name = name.lower()  # Convert to lowercase for consistent comparison
+    
+    # Handle regional variants and forms in format "pokemon-form"
+    for suffix in ["-alola", "-galar", "-hisui", "-paldea", "-shield", "-blade", "-normal", "-altered", "-land", "-sky", "-incarnate", "-therian", "-primal", "-origin"]:
+        if name.endswith(suffix):
+            return name[:-len(suffix)]  # Remove the suffix
+    
+    # Handle regional variants in format "pokemon (region)"
+    match = re.match(r"(.+?)\s*\(([^)]+)\)", name)
+    if match:
+        return match.group(1).strip()
+    
+    return name
+
 def censor_pokemon_names(text: str, names_to_censor=None) -> str:
-    """Replace Pokémon names with '***' in text."""
+    """Replace Pokémon names with '***' in text, handling both base names and regional variants."""
     if not names_to_censor:
         return text
-    pattern = r'\b(' + '|'.join(re.escape(name) for name in names_to_censor) + r')\b'
+    
+    # Create patterns for both the full name and base name
+    patterns = []
+    for name in names_to_censor:
+        base_name = get_base_name(name)
+        # Add pattern for the full name
+        patterns.append(re.escape(name))
+        # Add pattern for the base name if it's different from the full name
+        if base_name != name:
+            patterns.append(re.escape(base_name))
+            # Also add the base name with proper capitalization
+            patterns.append(re.escape(base_name.title()))
+    
+    # Create the final pattern with all variations
+    pattern = r'\b(' + '|'.join(patterns) + r')\b'
     return re.sub(pattern, "***", text, flags=re.IGNORECASE)

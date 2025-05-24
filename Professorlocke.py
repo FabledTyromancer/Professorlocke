@@ -2,20 +2,22 @@ import tkinter as tk
 from my_package.ui import QuizUI
 from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
-from my_package.utils import meters_to_feet_inches, kg_to_lbs
+from my_package.utils import meters_to_feet_inches, kg_to_lbs, set_unit_system
 from my_package.sprite_cacher import cache_sprites
 import my_package.cache_clearer as clearer
-from my_package.professorlockejsongenerator import POKEMON_COUNT
 import os
 import winsound
 import threading
+import json
+import re
 
 cache_dir = "professor_cache"
 
-#memory tracking, uncomment here and at the bottom
+#memory tracking, uncomment at top and bottom to run
 #import tracemalloc
 #tracemalloc.start()
-# Your code here
+
+
 
 
 class ProfessorLocke:
@@ -27,8 +29,8 @@ class ProfessorLocke:
             on_start_quiz=self.start_quiz,
             on_prev_question=self.prev_question,
             on_next_question=self.next_question,
-            clear_cache=self.clear_cache
-
+            clear_cache=self.clear_cache,
+            on_unit_toggle=self.toggle_unit_system
         )
         # label for loading data to display current status
         self.loading_label = tk.Label(root, text="", font=("Arial", 16), fg="blue")
@@ -58,11 +60,25 @@ class ProfessorLocke:
         if os.path.exists(poke_file): #professordata.json
             check_dict["poke_file"] = True
 
+        if os.path.exists(sprites_dir): #sprites directory
+            counter_file = os.path.join(cache_dir, "sprite_counter.json")
+            def load_counter():
+                """Load the sprite download counter."""
+                if os.path.exists(counter_file): #stored count of the sprites as they're downloaded/cached. If we don't match this count, it re-runs itself and comes to the correct number as it downloads/verifies.
+                    try:
+                        with open(counter_file, 'r') as f:
+                            return json.load(f)
+                    except:
+                        return {"total_downloaded": 0}
+                return {"total_downloaded": 0}
+            
+            list = os.listdir(sprites_dir) 
+            spritecount = len(list) # count downloaded sprites
+            expected_sprite_count = load_counter()["total_downloaded"] # pulls the sprite count
+            if spritecount == expected_sprite_count: #do we have all the sprites? check against sprite count
+                check_dict["sprites_dir"] = True
 
-        if os.path.exists(sprites_dir): #sprites directory exist - assume it has stuff in it
-            check_dict["sprites_dir"] = True
-
-        if os.path.exists(egg_file): #eggs
+        if os.path.exists(egg_file): #egg groups to modern english names
             check_dict["egg_groups"] = True
 
         return check_dict
@@ -84,7 +100,6 @@ class ProfessorLocke:
                 root.after(300)
             self.set_loading_message("Loading sprites...")
             if self.check_list["sprites_dir"]:
-                self.sprite_check = cache_sprites #incredibly fast check and get what's missing
                 root.after(100)
             else: #if we don't have it, get it, find everything we're missing, give updates
                 self.set_loading_message("Fetching sprites...")
@@ -108,7 +123,7 @@ class ProfessorLocke:
             self.cache_flag = True
             self.ui.root.after(0, lambda: self.ui.update_cache_button(self.cache_flag))          
 
-            self.all_pokemon = self.data # set a pool of comparative data
+            self.all_pokemon = self.data # set a pool of comparative data, for pokedex entries, but could be used to generate a random mon to do taller/shorter, heavier/lighter or other comparisons.
             self.current_pokemon = None
             self.current_question_index = 0
             self.score = 0
@@ -143,9 +158,20 @@ class ProfessorLocke:
         pokemon_name = pokemon_name.lower().strip() # Normalize input
         print(f"Searching for Pokemon: {pokemon_name}")  # Debug log
         
-        # Debug log to show available Pokemon
+        # Handle regional variant names in both formats; Vulpix (Alola) vs vulpix-alola
+            # First try direct match
         self.current_pokemon = next(
-            (p for p in self.data if p['name'].lower() == pokemon_name), None) # Find the Pokemon in the data
+            (p for p in self.data if p['name'].lower() == pokemon_name), None)
+            
+            # If not found, try converting from "pokemon (region)" format to "pokemon-region"
+        if not self.current_pokemon:
+            match = re.match(r"(.+?)\s*\(([^)]+)\)", pokemon_name)
+            if match:
+                base_name, region = match.groups()
+                formatted_name = f"{base_name.strip()}-{region.strip().lower()}"
+                self.current_pokemon = next(
+                    (p for p in self.data if p['name'].lower() == formatted_name), None)
+        
         if not self.current_pokemon: # If not found, show error, clear quiz frame (because of unknowable bugs that i don't want to solve), and reset the quiz
             self.ui.show_feedback("Pokemon not found.", "orange")
             self.reset_quiz()
@@ -158,9 +184,6 @@ class ProfessorLocke:
 
         self.questions = generate_questions(
             self.current_pokemon, self.egg_group_cache, self.all_pokemon)
-
-
-
 
         # Show the first question
         self.show_current_question()
@@ -258,12 +281,25 @@ class ProfessorLocke:
         else:
             self.show_current_question()
 
+    def toggle_unit_system(self, use_metric: bool):
+        """Toggle between metric and imperial units."""
+        set_unit_system(use_metric)
+        # If we have a current quiz, regenerate questions with new units
+        if self.current_pokemon:
+            self.questions = generate_questions(
+                self.current_pokemon, self.egg_group_cache, self.all_pokemon)
+            self.show_current_question()
+
+    
+    
+
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = ProfessorLocke(root)
     root.mainloop()
 
+#end of memory tracking, returns results when application closes
 #current, peak = tracemalloc.get_traced_memory()
 #print(f"Current memory usage: {current / (1024 * 1024)} MB")
 #print(f"Peak memory usage: {peak / (1024 * 1024)} MB")

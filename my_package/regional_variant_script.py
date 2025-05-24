@@ -247,13 +247,13 @@ def extract_spec_id_from_url(url):
 
 def main(fetched_variants: list, status_callback=None):
     all_forms = []
-    VARIANT_COUNT = len(all_forms)
-    for i in fetched_variants:
+    VARIANT_COUNT = len(fetched_variants)  # Use the input list length instead of all_forms
+    for i, variant_id in enumerate(fetched_variants, 1):  # Start enumeration at 1 for human-readable counting
         msg = f"Fetching Pokémon variety {i}/{VARIANT_COUNT}..."
         print(msg)
         if status_callback:
             status_callback(msg)
-        entry = get_pokemon_entry(i, status_callback)
+        entry = get_pokemon_entry(variant_id, status_callback)
         if entry:
             all_forms.append(entry)
         time.sleep(.5)

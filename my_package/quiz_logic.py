@@ -1,6 +1,6 @@
 import random
 from typing import Dict, List, Union, Tuple
-from my_package.utils import meters_to_feet_inches, kg_to_lbs, censor_pokemon_names
+from my_package.utils import format_height, format_weight, censor_pokemon_names, USE_METRIC
 from difflib import SequenceMatcher
 import unicodedata
 import re
@@ -10,48 +10,61 @@ def normalize_string(input_string: str) -> str:
     normalized = unicodedata.normalize('NFD', input_string)
     return ''.join(c for c in normalized if unicodedata.category(c) != 'Mn').lower().strip()
 
-
+def format_pokemon_name(name: str) -> str:
+    """Format a Pokémon name to display regional variants in a user-friendly way."""
+    # Convert to lowercase for consistent comparison
+    name = name.lower()
+    
+    # Handle regional variants in format "pokemon-region"
+    for region in ["alola", "galar", "hisui", "paldea"]:
+        if name.endswith(f"-{region}"):
+            base_name = name[:-len(region)-1]  # Remove "-region"
+            return f"{base_name.title()} ({region.title()})"
+    
+    return name.title()
 
 def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[Dict]) -> List[Dict]:
     """Generate quiz questions based on Pokémon data."""
+    # Format the Pokémon name for display
+    display_name = format_pokemon_name(pokemon.get('name'))
+    
     questions = [
         {
             "type": "text",
-            "question": f"What is {pokemon.get('name').title()}'s genus?",
+            "question": f"What is {display_name}'s genus?",
             "answer": pokemon['genus'][0] if pokemon['genus'] else "unknown",
             "field": "genus"
         },
         {
             "type": "text",
-            "question": f"What type(s) is {pokemon.get('name').title()}?",
+            "question": f"What type(s) is {display_name}?",
             "answer": pokemon.get('types', []),
             "field": "type"
         },
         {
             "type": "text",
-            "question": f"What is {pokemon.get('name').title()}'s height? (e.g., 5'11\")",
-            "answer": meters_to_feet_inches(pokemon.get('height') / 10),
+            "question": f"What is {display_name}'s height?",
+            "answer": format_height(pokemon.get('height')),
             "field": "height"
         },
         {
             "type": "text",
-            "question": f"What is {pokemon.get('name').title()}'s weight in pounds?",
-            "answer": round(kg_to_lbs(pokemon.get('weight') / 10), 1),
+            "question": f"What is {display_name}'s weight?",
+            "answer": format_weight(pokemon.get('weight') / 10),
             "field": "weight"
         },
         {
             "type": "text",
-            "question": f"What egg group(s) does {pokemon.get('name').title()} belong to?",
+            "question": f"What egg group(s) does {display_name} belong to?",
             "answer": [egg_group_cache.get(eg, eg) for eg in pokemon['egg_groups']],
             "field": "egg_group"
         },
         {
             "type": "text",
-            "question": f"What ability/abilities does {pokemon['name'].title()} have?",
+            "question": f"What ability/abilities does {display_name} have?",
             "answer": [a['name'] for a in pokemon['abilities']],
             "field": "ability"
         }
-
     ]
 
     # Add evolution chain question if available
@@ -65,18 +78,20 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
         # Only include evolutions where the 'from' is the current Pokémon
         for evo in evo_details:
             if evo.lower().startswith(base_name.lower() + " to "):
-            # The answer is the part after the colon and space
+                # The answer is the part after the colon and space
                 parts = evo.split(": ", 1)
                 if len(parts) > 1:
                     methods.append(parts[1])
         if methods: #only add if it evolves
-                questions.append(
+            questions.append(
                 {
-                "type": "text",
-                "question": f"How does {pokemon['name'].title()} evolve (any method)?",
-                "answer": methods,
-                "field": "evolution"
-                })
+                    "type": "text",
+                    "question": f"How does {display_name} evolve (any method)?",
+                    "answer": methods,
+                    "field": "evolution"
+                }
+            )
+
     # get a random flavor text from our pokemon or from all_pokemon, then censor pokemon names.
     flavor_texts = pokemon.get('flavor_text', [])
     if flavor_texts:
@@ -86,7 +101,6 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
             names_to_censor = [pokemon['name']]
             censored_entry = censor_pokemon_names(chosen_text, names_to_censor)
             correct_answer = True
-        
         else:
             other_pokemon = random.choice([p for p in all_pokemon if p['name'] != pokemon['name']])
             flavor_pokemon_name = other_pokemon['name']
@@ -103,17 +117,13 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
         questions.append(
             {
                 "type": "boolean",
-                "question": f"Is this a Pokédex entry for {pokemon['name'].title()}? {censored_entry}",
+                "question": f"Is this a Pokédex entry for {display_name}? {censored_entry}",
                 "answer": correct_answer,
                 "field": "flavor_text"
             }
         )
 
-    return questions    #completes questions as a list; if adding more questions, they need to go above here.
-                        #if they need logic, have them do the logic then append, simple questions can go in the upper portion
-
-
-
+    return questions
 
 # for boolean questions
 def check_boolean_answer(user_answer: bool, correct_answer: bool) -> bool:
@@ -143,23 +153,37 @@ def check_set_answer(user_answer: str, correct_answers: List[str]) -> bool:
 def check_height_answer(user_answer: str, correct_height_dm: float, margin: float = 0.15) -> bool:
     """Check if the user's height answer is within the margin of error."""
     try:
-        parts = user_answer.split("'")
-        if len(parts) == 2:
+        # First try to parse as imperial (feet'inches")
+        if "'" in user_answer:
+            parts = user_answer.split("'")
+            if len(parts) != 2:
+                return False
             feet = float(parts[0])
             inches = float(parts[1].strip('"'))
             total_inches = feet * 12 + inches
-            meters = total_inches * 0.0254
+            user_meters = total_inches * 0.0254
             correct_meters = correct_height_dm / 10
-            return abs(meters - correct_meters) <= (correct_meters * margin)
-    except ValueError:
+            print(f"Imperial check - User: {feet}'{inches}\", Correct: {correct_meters}m")
+            return abs(user_meters - correct_meters) <= (correct_meters * margin)
+        else:
+            # Try to parse as metric
+            user_value = float(''.join(c for c in user_answer if c.isdigit() or c == '.'))
+            correct_meters = correct_height_dm / 10
+            print(f"Metric check - User: {user_value}m, Correct: {correct_meters}m")
+            return abs(user_value - correct_meters) <= (correct_meters * margin)
+    except ValueError as e:
+        print(f"Error parsing height: {e}")
         return False
 
 
-def check_weight_answer(user_answer: str, correct_weight_kg: float, margin: float = 0.15) -> bool:
+def check_weight_answer(user_answer: str, correct_answer: str, margin: float = 0.15) -> bool:
     """Check if the user's weight answer is within the margin of error."""
     try:
-        user_value = float(user_answer)
-        return abs(user_value - correct_weight_kg) <= (correct_weight_kg * margin)
+        # Extract numeric values from both answers, ignoring units and rounding to integers
+        user_value = round(float(''.join(c for c in user_answer if c.isdigit() or c == '.')))
+        correct_value = round(float(''.join(c for c in correct_answer if c.isdigit() or c == '.')))
+        
+        return abs(user_value - correct_value) <= (correct_value * margin)
     except ValueError:
         return False
 
