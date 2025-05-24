@@ -25,7 +25,7 @@ class QuizUI:
         self.clear_cache = clear_cache
 
         self.root.title("ProfessorLocke")
-        self.root.geometry("600x550")
+        #self.root.geometry("600x550") #for stable image size
         self.root.option_add('*Font', DEFAULT_FONT)
         self.root.option_add('*Font', FEEDBACK_FONT)
 
