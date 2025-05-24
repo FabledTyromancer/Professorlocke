@@ -9,10 +9,10 @@ from my_package.professorlockejsongenerator import POKEMON_COUNT
 import os
 import winsound
 import threading
-import json
 
 cache_dir = "professor_cache"
 
+#memory tracking, uncomment here and at the bottom
 #import tracemalloc
 #tracemalloc.start()
 # Your code here

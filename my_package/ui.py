@@ -1,9 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict
 from PIL import Image, ImageTk, ImageOps
-import requests
-import io
 import winsound
 import os
 

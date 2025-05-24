@@ -1,4 +1,3 @@
-import requests
 import random
 from typing import Dict, List, Union, Tuple
 from my_package.utils import meters_to_feet_inches, kg_to_lbs, censor_pokemon_names
