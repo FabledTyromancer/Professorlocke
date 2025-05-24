@@ -26,17 +26,7 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
                 genus.append(gen["genus"])
         #fetch types
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
-        
-        #stats = []
-        #for s in pokemon_resp["stats"]:
-        #    statname = s["stats"]["name"]
-        #    basestat = s["stats"]["base_stat"]
-        #    effort = s["effort"]
-        #    stats.append({
-        #        "stat": statname,
-        #        "base_stat": basestat,
-        #        "effort": effort
-        #    })
+    
 
         #fetch all abilities
         abilities = []
@@ -61,7 +51,7 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
 
         #fetch dex entries
         flavor_texts = []  # Create a list to store all English flavor texts
-        versions = []
+        versions = [] # games flavor texts come from
         flavor_text_entries = species_resp.get("flavor_text_entries", [])
         for f in flavor_text_entries:
                 if f.get("language", {}).get("name") == "en":  # Ensure it's in English

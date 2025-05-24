@@ -59,7 +59,7 @@ class ProfessorLocke:
             check_dict["poke_file"] = True
 
 
-        if os.path.exists(sprites_dir): #sprites directory
+        if os.path.exists(sprites_dir): #sprites directory exist - assume it has stuff in it
             check_dict["sprites_dir"] = True
 
         if os.path.exists(egg_file): #eggs
@@ -84,7 +84,7 @@ class ProfessorLocke:
                 root.after(300)
             self.set_loading_message("Loading sprites...")
             if self.check_list["sprites_dir"]:
-                self.sprite_check = cache_sprites
+                self.sprite_check = cache_sprites #incredibly fast check and get what's missing
                 root.after(100)
             else: #if we don't have it, get it, find everything we're missing, give updates
                 self.set_loading_message("Fetching sprites...")
