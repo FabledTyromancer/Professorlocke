@@ -27,6 +27,23 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
         #fetch types
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
     
+        #fetch stats and effort values
+        stats = {}
+        effort_values = {}
+        for stat in pokemon_resp["stats"]:
+            stat_name = stat["stat"]["name"]
+            base_stat = stat["base_stat"]
+            effort = stat["effort"]
+            stats[stat_name] = base_stat
+            if effort != 0:
+                effort_values[stat_name] = effort
+
+        #fetch catch rate
+        catch_rate = species_resp["capture_rate"]
+
+        #fetch base happiness
+
+        base_happiness = species_resp["base_happiness"]
 
         #fetch all abilities
         abilities = []
@@ -120,8 +137,12 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "id": id,  # Add the Pokémon ID here
             "name": name,
             "genus": genus,
+            "capture_rate": catch_rate,
+            "base_happiness": base_happiness,
             "flavor_text": flavor_texts,
             "versions": versions,
+            "stats": stats,
+            "effort_values": effort_values,
             "types": types,
             "abilities": abilities,
             "height": height,

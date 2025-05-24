@@ -65,6 +65,7 @@ def generate_questions(pokemon: Dict, egg_group_cache: Dict, all_pokemon: List[D
             "answer": [a['name'] for a in pokemon['abilities']],
             "field": "ability"
         }
+
     ]
 
     # Add evolution chain question if available

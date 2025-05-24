@@ -10,6 +10,14 @@ def get_pokemon_entry(id, spec_id=None, status_callback=None):
         pokemon_resp = requests.get(API_BASE + f"pokemon/{id}").json() # we hold off on assigning species, as we need to pull it from the variant page, since it can't be passed normally
 
         name = pokemon_resp["name"]
+
+        #fetch stats
+        stats = {}
+        for stat in pokemon_resp["stats"]:
+            stat_name = stat["stat"]["name"]
+            base_stat = stat["base_stat"]
+            stats[stat_name] = base_stat
+
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
         abilities = []
         for a in pokemon_resp["abilities"]:
@@ -66,11 +74,13 @@ def get_pokemon_entry(id, spec_id=None, status_callback=None):
 
         #fetch dex entries
         flavor_texts = []  # Create a list to store all English flavor texts
+        versions = [] # games flavor texts come from
         flavor_text_entries = species_resp.get("flavor_text_entries", [])
         for f in flavor_text_entries:
                 if f.get("language", {}).get("name") == "en":  # Ensure it's in English
                     flavor_texts.append(f.get("flavor_text", ""))  # Append to the list
                     flavor_texts = list(set(flavor_texts))  # Remove duplicates
+                    versions.append(f.get("version"))
 
         #fetch evolution chain (all entries) and details
         evolution_chain = []
@@ -86,6 +96,8 @@ def get_pokemon_entry(id, spec_id=None, status_callback=None):
             "name": name,
             "genus": genus,
             "flavor_text": flavor_texts,
+            "versions": versions,
+            "stats": stats,
             "types": types,
             "abilities": abilities,
             "height": height,

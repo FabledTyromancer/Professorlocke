@@ -2,7 +2,7 @@ import tkinter as tk
 from my_package.ui import QuizUI
 from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
-from my_package.utils import meters_to_feet_inches, kg_to_lbs, set_unit_system
+from my_package.utils import meters_to_feet_inches, kg_to_lbs, set_unit_system, load_unit_preference
 from my_package.sprite_cacher import cache_sprites
 import my_package.cache_clearer as clearer
 import os
@@ -23,6 +23,8 @@ cache_dir = "professor_cache"
 class ProfessorLocke:
     def __init__(self, root):
         self.cache_flag = None
+        # Load unit preference
+        use_metric = load_unit_preference()
         #starts the main thing
         self.ui = QuizUI(
             root,
@@ -32,6 +34,10 @@ class ProfessorLocke:
             clear_cache=self.clear_cache,
             on_unit_toggle=self.toggle_unit_system
         )
+        # Set initial unit preference
+        self.ui.unit_var.set(use_metric)
+        self.ui.unit_button.config(text="m/kg" if use_metric else "ft-in/lbs")
+        set_unit_system(use_metric)
         # label for loading data to display current status
         self.loading_label = tk.Label(root, text="", font=("Arial", 16), fg="blue")
         self.loading_label.pack(pady=10)
@@ -61,20 +67,21 @@ class ProfessorLocke:
             check_dict["poke_file"] = True
 
         if os.path.exists(sprites_dir): #sprites directory
-            counter_file = os.path.join(cache_dir, "sprite_counter.json")
+            util_file = os.path.join(cache_dir, "utility.json")
             def load_counter():
                 """Load the sprite download counter."""
-                if os.path.exists(counter_file): #stored count of the sprites as they're downloaded/cached. If we don't match this count, it re-runs itself and comes to the correct number as it downloads/verifies.
+                if os.path.exists(util_file): #stored count of the sprites as they're downloaded/cached. If we don't match this count, it re-runs itself and comes to the correct number as it downloads/verifies.
                     try:
-                        with open(counter_file, 'r') as f:
-                            return json.load(f)
+                        with open(util_file, 'r') as f:
+                            data = json.load(f)
+                            return data.get("total_downloaded", 0)
                     except:
-                        return {"total_downloaded": 0}
-                return {"total_downloaded": 0}
+                        return 0
+                return 0
             
             list = os.listdir(sprites_dir) 
             spritecount = len(list) # count downloaded sprites
-            expected_sprite_count = load_counter()["total_downloaded"] # pulls the sprite count
+            expected_sprite_count = load_counter() # pulls the sprite count
             if spritecount == expected_sprite_count: #do we have all the sprites? check against sprite count
                 check_dict["sprites_dir"] = True
 

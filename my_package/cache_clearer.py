@@ -8,7 +8,7 @@ cache_dir = "professor_cache"
 sprites_dir = os.path.join(cache_dir, "sprites")
 poke_file = os.path.join(cache_dir, "professordata.json")
 egg_file = os.path.join(cache_dir, "egg_groups.json")
-counter_file = os.path.join(cache_dir, "sprite_counter.json")
+counter_file = os.path.join(cache_dir, "utility.json")
 
 # Deletes the caches, displays a status update, and deletes.
 def main(status_callback):

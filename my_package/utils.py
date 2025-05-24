@@ -1,12 +1,54 @@
 import re
+import json
+import os
 
 # Global unit system setting
 USE_METRIC = True
+
+def load_unit_preference():
+    """Load the unit system preference from cache."""
+    global USE_METRIC
+    cache_dir = "professor_cache"
+    util_file = os.path.join(cache_dir, "utility.json")
+    
+    if os.path.exists(util_file):
+        try:
+            with open(util_file, 'r') as f:
+                data = json.load(f)
+                USE_METRIC = data.get('use_metric', True)
+        except:
+            USE_METRIC = True
+    return USE_METRIC
+
+def save_unit_preference(use_metric: bool):
+    """Save the unit system preference to cache."""
+    cache_dir = "professor_cache"
+    util_file = os.path.join(cache_dir, "utility.json")
+    
+    try:
+        os.makedirs(cache_dir, exist_ok=True)
+        # Load existing data if file exists
+        data = {}
+        if os.path.exists(util_file):
+            try:
+                with open(util_file, 'r') as f:
+                    data = json.load(f)
+            except:
+                pass
+        
+        # Update unit preference while preserving other data
+        data['use_metric'] = use_metric
+        
+        with open(util_file, 'w') as f:
+            json.dump(data, f)
+    except:
+        pass
 
 def set_unit_system(use_metric: bool):
     """Set the unit system to use (True for metric, False for imperial)."""
     global USE_METRIC
     USE_METRIC = use_metric
+    save_unit_preference(use_metric)
 
 def meters_to_feet_inches(meters: float) -> str:
     """Convert meters to feet and inches."""
