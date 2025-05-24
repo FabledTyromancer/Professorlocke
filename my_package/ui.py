@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from typing import Callable, Dict
-from PIL import Image, ImageTk, ImageOps
-import winsound
 import os
 
 
@@ -30,7 +28,6 @@ class QuizUI:
 
         # Initialize UI elements
         self.score_label = None
-        self.sprite_label = None
         self.question_frame = None
         self.feedback_frame = None
         self.prev_button = None
@@ -106,9 +103,7 @@ class QuizUI:
             self.root, text="Score: 0/0", font=DEFAULT_FONT)
         self.score_label.pack(pady=5)
 
-        # Sprite label
-        self.sprite_label = ttk.Label(self.root)
-        self.sprite_label.pack(pady=5)
+
 
         # Configure styles for buttons
         style = ttk.Style()
@@ -193,55 +188,21 @@ class QuizUI:
                 entry.config(state="disabled")
         if not answered and question["type"] != "boolean":
             entry.bind('<Return>', lambda e: submit_answer())
-    def show_sprite(self, sprite_path: str, grayscale: bool = False):
-        """Fetch and display the Pokémon sprite."""
-        try:
-            if os.path.isfile(sprite_path):
-                image = Image.open(sprite_path)
-                if grayscale:
-                    # Convert to RGBA if not already
-                    if image.mode != 'RGBA':
-                        image = image.convert('RGBA')
-                    
-                    # Split the image into channels
-                    r, g, b, a = image.split()
-                    
-                    # Convert RGB to grayscale while preserving alpha
-                    gray = ImageOps.grayscale(image)
-                    
-                    # Create new image with grayscale RGB and original alpha
-                    image = Image.merge('RGBA', (gray, gray, gray, a))
-                
-                image = image.resize((200, 200), Image.Resampling.LANCZOS)
-                photo = ImageTk.PhotoImage(image)
-                self.sprite_label.config(image=photo)
-                self.sprite_label.image = photo  # Keep a reference
-            else:
-                print(f"Sprite not found: {sprite_path}")
-        except Exception as e:
-            print(f"Error loading sprite: {e}")
 
-    def show_final_grade(self, score: int, total_questions: int, sprite_url: str):
-        """Display the final grade and Pokémon sprite."""
+
+    def show_final_grade(self, score: int, total_questions: int):
+        """Display the final grade."""
         percentage = round((score / total_questions) *
                            100) if total_questions > 0 else 0
 
         # Play victory or failure theme based on score
         if percentage >= 75:
-            try:
-                winsound.PlaySound(self.victory_theme,
-                                   winsound.SND_ALIAS | winsound.SND_ASYNC)
-            except:
-                pass
+            self.root.configure(bg='green')
+            # Reset the background color after 3 seconds
+            self.root.after(3000, lambda: self.root.configure(bg='SystemButtonFace'))
         else:
-            try:
-                winsound.PlaySound(self.failure_theme,
-                                   winsound.SND_ALIAS | winsound.SND_ASYNC)
-            except:
-                pass
-
-        # Fetch and display sprite
-        self.show_sprite(sprite_url, grayscale=(percentage < 75))
+            self.root.configure(bg='red')
+            self.root.after(3000, lambda: self.root.configure(bg='SystemButtonFace'))
 
     def show_feedback(self, message: str, color: str):
         """Display feedback for the user's answer."""

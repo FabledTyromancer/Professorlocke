@@ -3,10 +3,8 @@ from my_package.ui import QuizUI
 from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
 from my_package.utils import meters_to_feet_inches, kg_to_lbs, set_unit_system, load_unit_preference
-from my_package.sprite_cacher import cache_sprites
 import my_package.cache_clearer as clearer
 import os
-import winsound
 import threading
 import json
 import re
@@ -53,37 +51,17 @@ class ProfessorLocke:
 
     #checks data, returns "true" to dict
     def check_data(self, cache_dir):
-        sprites_dir = os.path.join(cache_dir, "sprites")
         poke_file = os.path.join(cache_dir, "professordata.json")
         egg_file = os.path.join(cache_dir, "egg_groups.json")
 
         check_dict = {
             "poke_file": False,
-            "sprites_dir": False,
             "egg_groups": False
         }
 
         if os.path.exists(poke_file): #professordata.json
             check_dict["poke_file"] = True
 
-        if os.path.exists(sprites_dir): #sprites directory
-            util_file = os.path.join(cache_dir, "utility.json")
-            def load_counter():
-                """Load the sprite download counter."""
-                if os.path.exists(util_file): #stored count of the sprites as they're downloaded/cached. If we don't match this count, it re-runs itself and comes to the correct number as it downloads/verifies.
-                    try:
-                        with open(util_file, 'r') as f:
-                            data = json.load(f)
-                            return data.get("total_downloaded", 0)
-                    except:
-                        return 0
-                return 0
-            
-            list = os.listdir(sprites_dir) 
-            spritecount = len(list) # count downloaded sprites
-            expected_sprite_count = load_counter() # pulls the sprite count
-            if spritecount == expected_sprite_count: #do we have all the sprites? check against sprite count
-                check_dict["sprites_dir"] = True
 
         if os.path.exists(egg_file): #egg groups to modern english names
             check_dict["egg_groups"] = True
@@ -104,13 +82,6 @@ class ProfessorLocke:
             else:  #if we don't have it, get it.
                 self.set_loading_message("Fetching Pokémon data...")
                 self.data = fetch_pokemon_data(status_callback=self.set_fetching_label)
-                root.after(300)
-            self.set_loading_message("Loading sprites...")
-            if self.check_list["sprites_dir"]:
-                root.after(100)
-            else: #if we don't have it, get it, find everything we're missing, give updates
-                self.set_loading_message("Fetching sprites...")
-                self.sprite_check = cache_sprites(status_callback=self.set_fetching_label)
                 root.after(300)
             self.set_loading_message("Loading egg group cache...")
             if self.check_list["egg_groups"]:
@@ -202,7 +173,6 @@ class ProfessorLocke:
         self.questions = []
         self.answered_questions.clear()
         self.ui.clear_question_frame()  # Clear previous questions
-        self.ui.sprite_label.config(image='')  # Clear sprite
     #go backwards in list
     def prev_question(self):
         if self.current_question_index > 0:
@@ -255,7 +225,6 @@ class ProfessorLocke:
         if exact_match:
             self.score += 1
             self.ui.show_feedback("Correct!", "green")
-            winsound.PlaySound(self.ui.correct_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
         elif close_match:
             self.score += .5
             correct_answer = question["answer"]
@@ -263,14 +232,12 @@ class ProfessorLocke:
                 correct_answer = ", ".join(correct_answer)
             self.ui.show_feedback(
                 f"Partially Correct! The correct answer is:\n{correct_answer}", "orange")
-            winsound.PlaySound(self.ui.partial_correct_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
         else:
             correct_answer = question["answer"]
             if isinstance(correct_answer, list):
                 correct_answer = "\n".join(correct_answer)
             self.ui.show_feedback(
                 f"Incorrect! The correct answer is:\n{correct_answer}", "red")
-            winsound.PlaySound(self.ui.incorrect_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
 
 
         # Save the user's answer for display
@@ -282,9 +249,8 @@ class ProfessorLocke:
 
         # Show final grade if all questions are answered
         if len(self.answered_questions) == len(self.questions):
-            sprite_path = os.path.join("professor_cache", "sprites", f"{self.current_pokemon['name'].lower()}.png")
             self.ui.show_final_grade(
-                self.score, self.total_questions, sprite_path)
+                self.score, self.total_questions)
         else:
             self.show_current_question()
 
