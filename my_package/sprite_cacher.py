@@ -32,7 +32,7 @@ def cache_sprites(status_callback=None, sprite_callback=None):
                 if sprite_callback:
                     sprite_callback(filepath)
                 msg = f"Already cached: {filename}"
-                print(msg) # cache confirmation
+                #print(msg) # cache confirmation
                 if status_callback:
                     status_callback(msg)
             else:
@@ -57,7 +57,7 @@ def cache_sprites(status_callback=None, sprite_callback=None):
         if isinstance(forms, list) and isinstance(formurl, list):
             for form_name, form_url in zip(forms, formurl):
                 if not form_url or not form_name:
-                    print(f"Skipping form: {form_name}, url: {form_url}")
+                    #print(f"Skipping form: {form_name}, url: {form_url}")
                     continue
                 ext = os.path.splitext(form_url)[1] or '.png'
                 filename = f"{form_name}{ext}"

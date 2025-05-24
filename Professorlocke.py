@@ -4,11 +4,12 @@ from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
 from my_package.utils import meters_to_feet_inches, kg_to_lbs
 from my_package.sprite_cacher import cache_sprites
-from my_package.professorlockejsongenerator import POKEMON_COUNT
 import my_package.cache_clearer as clearer
+from my_package.professorlockejsongenerator import POKEMON_COUNT
 import os
 import winsound
 import threading
+import json
 
 cache_dir = "professor_cache"
 
@@ -56,37 +57,13 @@ class ProfessorLocke:
 
         if os.path.exists(poke_file): #professordata.json
             check_dict["poke_file"] = True
-            self.data = fetch_pokemon_data()
+
 
         if os.path.exists(sprites_dir): #sprites directory
-                FORM_COUNT = 0
-                VARIANT_COUNT = 0
-                try:
-                    forms = [f for f in self.data if f.get("forms")]
-                    formurl = [furl for furl in self.data if furl.get("form_sprite_url")]
-                except Exception as e:
-                    print(f"Error identifying forms: {e}")
-                try: 
-                    FORM_COUNT += len([1 for form_name, form_url in zip(forms, formurl) if form_url and form_name])
-                except Exception as e:
-                    print(f"Error calculating FORM_COUNT: {e}")
-                try:
-                    variant = [v for v in self.data if v.get("variants")]
-                    fetchedvariant = [fv for fv in self.data if fv.get("fetched_variants")]
-                except Exception as e:
-                    print(f"Error identifying forms: {e}")
-                try:
-                    VARIANT_COUNT += len([1 for variant_name, fetched_variant in zip(variant, fetchedvariant) if fetched_variant and variant_name])
-                except Exception as e:
-                    print(f"Error calculating VARIANT_COUNT: {e}")
-                list = os.listdir(sprites_dir)
-                spritecount = len(list)
-                if spritecount == POKEMON_COUNT + VARIANT_COUNT + FORM_COUNT: #do we have all the sprites? current mon number, tied to the number generating your json.
-                    check_dict["sprites_dir"] = True
+            check_dict["sprites_dir"] = True
 
         if os.path.exists(egg_file): #eggs
             check_dict["egg_groups"] = True
-
 
         return check_dict
 
@@ -107,6 +84,7 @@ class ProfessorLocke:
                 root.after(300)
             self.set_loading_message("Loading sprites...")
             if self.check_list["sprites_dir"]:
+                self.sprite_check = cache_sprites
                 root.after(100)
             else: #if we don't have it, get it, find everything we're missing, give updates
                 self.set_loading_message("Fetching sprites...")
