@@ -8,7 +8,7 @@ from tkinter import ttk
 import my_package.regional_variant_script as variant
 
 
-POKEMON_COUNT = 1 # Current mon number, adjust if there's more in the future lmao
+POKEMON_COUNT = 1025 # Current mon number, adjust if there's more in the future lmao
 API_BASE = "https://pokeapi.co/api/v2/"
 
 
