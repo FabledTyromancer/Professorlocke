@@ -7,7 +7,7 @@ This is that quiz. It pulls from PokéApi.co for Pokémon and species data, play
 
 # How It's Made:
 
-Language: Python, a lot of standard dependencies, but some non-standard: winsound for the victory sounds, pillow for the images. You can remove them in the code if you want.
+Language: Python, a lot of standard dependencies, but some non-standard: requests, for, y'know, API requests winsound for the victory sounds, pillow for the images. You can remove them in the code if you want.
 
 It's a bit of a quirky thing, mainly parsing jsons and wrapping it up pretty for the dopamine receptors, but it's fairly moldable. A lot of data is passed between the packages, so it should be fairly manageable to make any modifications you like without breaking it entirely, just make sure you update it across the requisite packages.
 

@@ -12,7 +12,7 @@ def fetch_pokemon_data(cache_dir: str = "professor_cache", status_callback=None)
 
     # Check if cache exists and is valid
     if os.path.exists(poke_file):
-            print(f"professordata.json found!")
+            #print(f"professordata.json found!")
             if status_callback:
                 status_callback(f"professordata.json found!")
             time.sleep(.1)

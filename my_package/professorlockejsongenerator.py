@@ -5,6 +5,7 @@ import os
 import re
 import tkinter as tk
 from tkinter import ttk
+import my_package.regional_variant_script as variant
 
 
 POKEMON_COUNT = 1025 # Current mon number, adjust if there's more in the future lmao
@@ -25,6 +26,25 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
                 genus.append(gen["genus"])
         #fetch types
         types = [t["type"]["name"] for t in pokemon_resp["types"]]
+    
+        #fetch stats and effort values
+        stats = {}
+        effort_values = {}
+        for stat in pokemon_resp["stats"]:
+            stat_name = stat["stat"]["name"]
+            base_stat = stat["base_stat"]
+            effort = stat["effort"]
+            stats[stat_name] = base_stat
+            if effort != 0:
+                effort_values[stat_name] = effort
+
+        #fetch catch rate
+        catch_rate = species_resp["capture_rate"]
+
+        #fetch base happiness
+
+        base_happiness = species_resp["base_happiness"]
+
         #fetch all abilities
         abilities = []
         for a in pokemon_resp["abilities"]:
@@ -43,16 +63,18 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
         #fetch front_default sprite url, for sprite caching later
         sprite = pokemon_resp["sprites"]["front_default"]
 
-        #fetch groups
+        #fetch egg groups
         egg_groups = [e["name"] for e in species_resp["egg_groups"]]
 
         #fetch dex entries
         flavor_texts = []  # Create a list to store all English flavor texts
+        versions = [] # games flavor texts come from
         flavor_text_entries = species_resp.get("flavor_text_entries", [])
         for f in flavor_text_entries:
                 if f.get("language", {}).get("name") == "en":  # Ensure it's in English
                     flavor_texts.append(f.get("flavor_text", ""))  # Append to the list
                     flavor_texts = list(set(flavor_texts))  # Remove duplicates
+                    versions.append(f.get("version"))
 
         #fetch evolution chain (all entries) and details
         evolution_chain = []
@@ -61,6 +83,53 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             evo_chain_data = requests.get(evo_chain_url).json()
             evolution_chain = extract_evolution_chain(evo_chain_data["chain"])
             triggers = extract_evolution_chain_details(evo_chain_data["chain"])
+        
+        # fetch forms with no battle differences
+        forms = []
+        formsprites = []
+        form = pokemon_resp.get("forms", [])
+        for fo in form:
+            formname = fo.get("name")
+            if formname != name:
+                forms.append(formname)
+                formurl = fo.get("url")
+                formid = extract_id_from_url(formurl)
+                formresp = requests.get(API_BASE + f"pokemon-form/{formid}").json()
+                formsprites.append(formresp["sprites"]["front_default"])
+
+
+
+        # fetch forms and variants with battle differences; combine into different lists and return them for different uses
+        variants_to_fetch = [] # variants_to_fetch becomes runnable quiz targets, and will be pulled using the variant script
+        variants = [] # just listable for question purposes since we're already handling the data, even if we aren't fetching it.
+        varieties = species_resp.get("varieties", [])
+        for v in varieties:
+            varname = v.get("pokemon", {}).get("name", "")
+            if not v.get("is_default", True):
+                variants.append(varname) #adds all varieties to list for possible question use
+                unwanted_variants_to_fetch = [
+                    "-gmax",
+                    "-totem",
+                    "-cap",
+                    "-belle",
+                    "-libre",
+                    "-cosplay",
+                    "-phd",
+                    "-pop-star",
+                    "-rock-star",
+                    "-ash",
+                    "-small",
+                    "-large",
+                    "-super",
+                    "-starter"
+                    ] # add varieties you don't want to see here, such as -mega or -alola (or whatever region)
+                if not any(uv in varname for uv in unwanted_variants_to_fetch): # if not unwanted
+                    url = v.get("pokemon", {}).get("url", "") #get the URL
+                    if url:
+                        variant_id = extract_id_from_url(url) #strip the ID from the URL, we're going to run it back through
+                        if variant_id:
+                            variants_to_fetch.append(variant_id) #variant ID is saved as information in the json building so it's easily findable
+
 
 
         #if you pull more data from a pokemon, you'll have to add it here, as this is the json build
@@ -68,7 +137,12 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "id": id,  # Add the Pokémon ID here
             "name": name,
             "genus": genus,
+            "capture_rate": catch_rate,
+            "base_happiness": base_happiness,
             "flavor_text": flavor_texts,
+            "versions": versions,
+            "stats": stats,
+            "effort_values": effort_values,
             "types": types,
             "abilities": abilities,
             "height": height,
@@ -77,7 +151,11 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
             "held_items": held_items,
             "evolution_chain": evolution_chain,
             "evolution_chain_details": triggers,
-            "sprite_url": sprite
+            "sprite_url": sprite,
+            "form_sprite_url": formsprites,
+            "forms": forms,
+            "variants": variants,
+            "fetched_variants": variants_to_fetch
             
         }
     except Exception as e:
@@ -85,6 +163,15 @@ def get_pokemon_entry(id, status_callback=None):  # Go catch them mons, fetch th
         if status_callback:
             status_callback(f"Error fetching Pokémon ID {id}: {e}")
         return None
+    # shake that URL down for the good stuff
+def extract_id_from_url(url):
+    match = re.search(r'/pokemon/(\d+)/', url)
+    if match:
+        return int(match.group(1))
+    match = re.search(r'pokemon-form/(\d+)/', url)
+    if match:
+        return int(match.group(1))
+    return None
 
 def get_ability_effect(ability_name):
     """Fetch the short_effect of an ability by its name."""
@@ -222,6 +309,7 @@ def clean_evolution_detail(detail):
 
 def main(status_callback=None):
     all_pokemon = []
+    all_variants = set() # we add variants here to pull and append at the end
     for i in range(1, POKEMON_COUNT + 1):
         msg = f"Fetching Pokémon ID {i}/{POKEMON_COUNT}..."
         print(msg)
@@ -230,7 +318,15 @@ def main(status_callback=None):
         entry = get_pokemon_entry(i, status_callback)
         if entry:
             all_pokemon.append(entry)
+            print("Variants to add:", entry.get("fetched_variants", []))
+            all_variants.update(entry.get("fetched_variants", []))
+            print(entry.get("fetched_variants", []))
         time.sleep(0.5)  # Respect API limits (critical)
+    
+    if all_variants:
+        variant_entries = variant.main(list(all_variants), status_callback) # runs a different version of this scripting process and pulls it back
+        all_pokemon.extend(variant_entries)
+
 
     cache_dir = "professor_cache"
     poke_file = os.path.join(cache_dir, "professordata.json")
