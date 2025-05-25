@@ -79,18 +79,15 @@ class ProfessorLocke:
             if self.check_list["poke_file"]:  #if we have it, load it, but faster.
                 self.data = fetch_pokemon_data()
                 root.after(100)
-            else:  #if we don't have it, get it.
-                self.set_loading_message("Fetching Pokémon data...")
-                self.data = fetch_pokemon_data(status_callback=self.set_fetching_label)
-                root.after(300)
+            else:
+                self.set_loading_message("Redownload or move cache, professordata.json not found")
             self.set_loading_message("Loading egg group cache...")
             if self.check_list["egg_groups"]:
                 self.egg_group_cache = load_egg_group_cache()
                 root.after(100)
             else:
-                self.set_loading_message("Fetching egg group cache...")
-                self.egg_group_cache = load_egg_group_cache()
-                root.after(300)
+                self.set_loading_message("Redownload or move cache, egg_groups.json not found")
+
             self.set_loading_message("Loading Complete!")
             root.after(200)
 
