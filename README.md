@@ -7,15 +7,15 @@ This is that quiz. It pulls from PokéApi.co for Pokémon and species data, play
 
 # How It's Made:
 
-Language: Python, a lot of standard dependencies, but some non-standard: requests, for, y'know, API requests winsound for the victory sounds, pillow for the images. You can remove them in the code if you want.
+Language: Python, a lot of standard dependencies, but some non-standard: requests, for, y'know, API requests, pillow for the images. You can remove them in the code if you want, or use the base Python version or the requests only version, depending on your familiarity and comfort.
 
 It's a bit of a quirky thing, mainly parsing jsons and wrapping it up pretty for the dopamine receptors, but it's fairly moldable. A lot of data is passed between the packages, so it should be fairly manageable to make any modifications you like without breaking it entirely, just make sure you update it across the requisite packages.
 
 # How to Use:
 
-For the initial install, again, make sure you have the dependencies above. On Windows, you're probably looking at C:\Users\[your user here]. There will be a lengthy download when you launch it for the first time, with an initialization displayed in the GUI and some text printed in the terminal, but there are areas where you can activate/reactivate debug lines if you have problems. If you want to add sounds, be sure you put them in the cache file (professor_cache) created on the os.path. I have added a full zipped version of the cache that you can download and unzip in the right spot, to not pull from the API, but I anticipate it will get out of date fast.
+For the initial install, again, make sure you have the dependencies above or select an appropriate branch. I have added a full zipped version of the cache that you can download and unzip in the right spot, to not pull from the API if possible. On Windows, you're probably looking at C:\Users\[your user here]. There will be a lengthy download when you launch it for the first time without the cache, with an initialization displayed in the GUI and some text printed in the terminal, but there are areas where you can activate/reactivate debug lines if you have problems. If you want to add sounds, be sure you put them in the cache file (professor_cache) created on the os.path.
 
-It's also not the nicest on the API to do that much pulling repeatedly, so please be mindful! But if you want to add more parameters to pull from the species or pokemon files, you can do so in the jsongenerator package, if you want to add more questions, do so in the quiz_logic package, just make sure you're consistent. The UI and Professorlocke shouldn't care one way or the other.
+It's also not the nicest on the API to do that much pulling repeatedly, so please be mindful! But if you want to add more parameters to pull from the species or pokemon files, you can do so in the jsongenerator package, if you want to add more questions, do so in the quiz_logic package, just make sure you're consistent. The UI and Professorlocke shouldn't care one way or the other, but you can reset the cache if you run into problems.
 
 # See it in action:
 
