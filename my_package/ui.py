@@ -24,7 +24,7 @@ class QuizUI:
         self.on_unit_toggle = on_unit_toggle
 
         self.root.title("ProfessorLocke")
-        self.root.geometry("600x550") #for stable image size
+        self.root.minsize(600, 550)  # Set minimum size for stable window/placement, can comment out for it to adjust automatically.
         self.root.option_add('*Font', DEFAULT_FONT)
         self.root.option_add('*Font', FEEDBACK_FONT)
 
@@ -216,6 +216,9 @@ class QuizUI:
                 photo = ImageTk.PhotoImage(image)
                 self.sprite_label.config(image=photo)
                 self.sprite_label.image = photo  # Keep a reference
+                
+                # Update window size to accommodate sprite
+                self.root.update_idletasks()
             else:
                 print(f"Sprite not found: {sprite_path}")
         except Exception as e:
