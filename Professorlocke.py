@@ -19,7 +19,6 @@ cache_dir = "professor_cache"
 
 
 
-
 class ProfessorLocke:
     def __init__(self, root):
         self.cache_flag = None
@@ -161,30 +160,54 @@ class ProfessorLocke:
         if not pokemon_name.strip():
             self.ui.show_feedback("Please enter a Pokemon name!", "red") # error if no name is entered
             return
-        # Set current pokemon and generate questions
-        pokemon_name = pokemon_name.lower().strip() # Normalize input
-        print(f"Searching for Pokemon: {pokemon_name}")  # Debug log
+
+        def normalize_pokemon_name(name: str) -> str:
+            """Normalize Pokémon name for searching."""
+            # Convert to lowercase and strip whitespace
+            name = name.lower().strip()
+            
+            # Handle regional variants in both formats: "Vulpix (Alola)" and "Vulpix Alola"
+            if '(' in name:
+                base, region = name.split('(')
+                base = base.strip()
+                region = region.strip(')').strip().lower()
+                return f"{base}-{region}"
+            elif ' ' in name:
+                parts = name.split()
+                if len(parts) == 2 and parts[1].lower() in ['alola', 'galar', 'hisui', 'paldea']:
+                    return f"{parts[0]}-{parts[1]}"
+            
+            # Remove special characters and extra spaces
+            name = re.sub(r'[^a-z0-9\s-]', '', name)
+            name = re.sub(r'\s+', ' ', name)
+            
+            return name
+
+        # Normalize the Pokémon name
+        normalized_name = normalize_pokemon_name(pokemon_name)
+        print(f"Searching for Pokemon: {normalized_name}")  # Debug log
         
         # Handle regional variant names in both formats; Vulpix (Alola) vs vulpix-alola
             # First try direct match
         self.current_pokemon = next(
-            (p for p in self.data if p['name'].lower() == pokemon_name), None)
-            
-            # If not found, try converting from "pokemon (region)" format to "pokemon-region"
+            (p for p in self.data if p['name'].lower() == normalized_name), None)
+        
+        # If not found, try to find the base form
         if not self.current_pokemon:
-            match = re.match(r"(.+?)\s*\(([^)]+)\)", pokemon_name)
-            if match:
-                base_name, region = match.groups()
-                formatted_name = f"{base_name.strip()}-{region.strip().lower()}"
-                self.current_pokemon = next(
-                    (p for p in self.data if p['name'].lower() == formatted_name), None)
+            # Split the name by hyphen to get the base name
+            base_name = normalized_name.split('-')[0]
+            # Find the first Pokémon that starts with the base name
+            self.current_pokemon = next(
+                (p for p in self.data if p['name'].lower().startswith(base_name)), None)
         
         if not self.current_pokemon: # If not found, show error, clear quiz frame (because of unknowable bugs that i don't want to solve), and reset the quiz
             self.ui.show_feedback("Pokemon not found.", "orange")
             self.reset_quiz()
             return
         
-        print(f"Found Pokemon: {self.current_pokemon['name']}")  # Debug log 
+        print(f"Found Pokemon: {self.current_pokemon['name']}")  # Debug log
+
+
 
         # Reset quiz state
         self.reset_quiz()
