@@ -3,7 +3,6 @@ from my_package.ui import QuizUI
 from my_package.quiz_logic import check_answer, generate_questions
 from my_package.data_fetching import fetch_pokemon_data, load_egg_group_cache
 from my_package.utils import meters_to_feet_inches, kg_to_lbs, set_unit_system, load_unit_preference
-import my_package.cache_clearer as clearer
 import os
 import threading
 import json
@@ -29,7 +28,6 @@ class ProfessorLocke:
             on_start_quiz=self.start_quiz,
             on_prev_question=self.prev_question,
             on_next_question=self.next_question,
-            clear_cache=self.clear_cache,
             on_unit_toggle=self.toggle_unit_system
         )
         # Set initial unit preference
@@ -81,12 +79,14 @@ class ProfessorLocke:
                 root.after(100)
             else:
                 self.set_loading_message("Redownload or move cache, professordata.json not found")
+                root.after(800)
             self.set_loading_message("Loading egg group cache...")
             if self.check_list["egg_groups"]:
                 self.egg_group_cache = load_egg_group_cache()
                 root.after(100)
             else:
                 self.set_loading_message("Redownload or move cache, egg_groups.json not found")
+                root.after(800)
 
             self.set_loading_message("Loading Complete!")
             root.after(200)
@@ -195,17 +195,6 @@ class ProfessorLocke:
         if self.current_question_index < len(self.questions) - 1:
             self.current_question_index += 1
             self.show_current_question()
-    # Delete cache function for the button
-    def clear_cache(self):
-        def clear():
-            if self.cache_flag:
-                clearer.main(status_callback=self.set_loading_message)
-                self.cache_flag = False #says we don't have a cache, disabling the button
-                self.check_list = self.check_data(cache_dir) # Rebuild list of directories
-                root.after(100, self.load_data) # Reload data
-            else:
-                print(f"no cache to clear")
-        threading.Thread(target=clear, daemon=True).start() # threading to work easier.
     
         
 
@@ -223,9 +212,6 @@ class ProfessorLocke:
             can_go_next=self.current_question_index < len(self.questions) - 1
         )
 
-        self.ui.update_cache_button(
-            cache_issue = self.cache_flag
-        )
     
     # you probably get the gist, answer submits
     def submit_answer(self, user_answer: str):

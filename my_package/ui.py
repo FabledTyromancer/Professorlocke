@@ -12,13 +12,12 @@ cache_dir = "professor_cache"
 
 
 class QuizUI:
-    def __init__(self, root: tk.Tk, on_start_quiz: Callable[[str], None], on_prev_question: Callable, on_next_question: Callable, clear_cache: Callable, on_unit_toggle: Callable[[bool], None]):
+    def __init__(self, root: tk.Tk, on_start_quiz: Callable[[str], None], on_prev_question: Callable, on_next_question: Callable, on_unit_toggle: Callable[[bool], None]):
         """Initialize the UI."""
         self.root = root
         self.on_start_quiz = on_start_quiz
         self.on_prev_question = on_prev_question
         self.on_next_question = on_next_question
-        self.clear_cache = clear_cache
         self.on_unit_toggle = on_unit_toggle
 
         self.root.title("ProfessorLocke")
@@ -74,10 +73,6 @@ class QuizUI:
         )
         self.unit_button.pack(side="left", padx=5)
 
-        self.clear_cache_button = ttk.Button(
-            unit_frame, text="Reset Cache", command=self.clear_cache, state="disabled", style='warning.Outline.TButton')
-        self.clear_cache_button.pack(side="right", padx=5)
-
         # Question frame
         self.question_frame = ttk.Frame(self.root)
         self.question_frame.pack(pady=5, padx=10, fill="both", expand=True)
@@ -120,9 +115,7 @@ class QuizUI:
         """Enable or disable navigation buttons."""
         self.prev_button.config(state="normal" if can_go_prev else "disabled")
         self.next_button.config(state="normal" if can_go_next else "disabled")
-    
-    def update_cache_button(self, cache_issue: bool):
-        self.clear_cache_button.config(state="normal" if cache_issue else "disabled")
+
 
     def clear_question_frame(self):
         """Clear all widgets from the question frame."""
