@@ -93,10 +93,7 @@ class ProfessorLocke:
 
             
             self.loading_label.after(0, lambda: self.loading_label.pack_forget())  # Remove loading label when we're done
-            self.fetching_label.after(0, lambda: self.fetching_label.pack_forget()) # remove the fetching label now that it's done
-
-            self.cache_flag = True
-            self.ui.root.after(0, lambda: self.ui.update_cache_button(self.cache_flag))          
+            self.fetching_label.after(0, lambda: self.fetching_label.pack_forget()) # remove the fetching label now that it's done        
 
             self.all_pokemon = self.data # set a pool of comparative data, for pokedex entries, but could be used to generate a random mon to do taller/shorter, heavier/lighter or other comparisons.
             self.current_pokemon = None
