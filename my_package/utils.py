@@ -81,7 +81,7 @@ def get_base_name(name: str) -> str:
     name = name.lower()  # Convert to lowercase for consistent comparison
     
     # Handle regional variants and forms in format "pokemon-form"
-    for suffix in ["-alola", "-galar", "-hisui", "-paldea", "-shield", "-blade", "-normal", "-altered", "-land", "-sky", "-incarnate", "-therian", "-primal", "-origin", "-mega", "-mega-x", "-mega-y", "-red-striped", "-blue-striped", "-white-striped", "-male", -"female", "-standard"]:
+    for suffix in ["-alola", "-galar", "-hisui", "-paldea", "-shield", "-blade", "-normal", "-altered", "-land", "-sky", "-incarnate", "-therian", "-primal", "-origin", "-mega", "-mega-x", "-mega-y", "-red-striped", "-blue-striped", "-white-striped", "-male", "-female", "-standard"]:
         if name.endswith(suffix):
             return name[:-len(suffix)]  # Remove the suffix
     
