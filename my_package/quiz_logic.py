@@ -183,7 +183,10 @@ def check_weight_answer(user_answer: str, correct_answer: str, margin: float = 0
         # Extract numeric values from both answers, ignoring units and rounding to integers
         user_value = round(float(''.join(c for c in user_answer if c.isdigit() or c == '.')))
         correct_value = round(float(''.join(c for c in correct_answer if c.isdigit() or c == '.')))
-        
+        if correct_value < 10:
+            return abs(user_value - correct_value) <= 1
+        else:
+            return abs(user_value - correct_value) <= (correct_value * margin)
         return abs(user_value - correct_value) <= (correct_value * margin)
     except ValueError:
         return False
